@@ -77,7 +77,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#111110;--off-white:#f7f6f3;--warm-white:#faf9f6;--sand:#e8e2d9;--stone:#9e9890;--accent:#c9a96e;--accent-dark:#a8854d;--green:#4a7c59}
 html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-y}
-body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:100%;position:relative;touch-action:pan-x pan-y}
+body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1440px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
 /* NAV — transparent over banner, no logo */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
@@ -89,7 +89,7 @@ nav ul a:hover{color:var(--black)}
 .nav-partner:hover{background:var(--accent-dark)!important;color:#fff!important}
 /* BANNER HERO */
 .banner-hero{position:relative;width:100%;padding-top:72px;overflow:hidden}
-.banner-img{width:100%;display:block;max-height:480px;object-fit:cover;object-position:center top}
+.banner-img{width:100%;display:block;height:clamp(420px,52vh,680px);object-fit:cover;object-position:center top}
 .banner-tagline{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 100%);padding:40px 52px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
 .banner-tagline h1{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,40px);color:#fff;line-height:1.2;letter-spacing:-0.01em;text-shadow:0 2px 16px rgba(0,0,0,0.4);flex:1;min-width:0}
 .banner-tagline h1 em{font-style:italic;color:var(--accent)}
@@ -1969,9 +1969,11 @@ async function previewReviewPhoto(event) {
   btn.disabled = true; btn.textContent = 'Uploading...';
   const ext = file.name.split('.').pop();
   const filename = 'reviews/' + Date.now() + '.' + ext;
-  const { data, error } = await supabase.storage.from('images').upload(filename, file, { upsert: true });
-  if (!error) {
-    const url = supabase.storage.from('images').getPublicUrl(filename).data.publicUrl;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/images/${filename}`, {
+    method:'POST', headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type,'x-upsert':'true'}, body:file
+  });
+  if (res.ok) {
+    const url = `${SUPABASE_URL}/storage/v1/object/public/images/${filename}`;
     document.getElementById('rvPhotoUrl').value = url;
     const prev = document.getElementById('rvPhotoPreview');
     prev.src = url; prev.style.display = 'block';
@@ -1998,10 +2000,10 @@ async function saveReview() {
   };
   try {
     if (editingReviewId) {
-      await supabase.from('reviews').update(data).eq('id', editingReviewId);
+      await sbFetch('reviews?id=eq.'+editingReviewId, {method:'PATCH', body:JSON.stringify(data)});
       showToast('Review updated!','success');
     } else {
-      await supabase.from('reviews').insert([data]);
+      await sbFetch('reviews', {method:'POST', body:JSON.stringify(data)});
       showToast('Review added!','success');
     }
     closeReviewModal();
@@ -2013,40 +2015,45 @@ async function saveReview() {
 async function loadAdminReviews() {
   const container = document.getElementById('reviewsAdminList');
   container.innerHTML = '<div style="color:#94a3b8;font-size:14px;padding:40px 0">Loading...</div>';
-  const { data } = await supabase.from('reviews').select('*').order('created_at',{ascending:false});
-  if (!data || !data.length) {
-    container.innerHTML = '<div style="color:#94a3b8;font-size:14px;padding:40px 0">No reviews yet. Click "+ Add Review" to get started.</div>';
-    return;
-  }
-  container.innerHTML = data.map(r => `
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        ${r.photo_url ? `<img src="${r.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">` :
-          `<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#c9a96e,#8b6f3c);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0">${r.initials||r.name.substring(0,2).toUpperCase()}</div>`}
-        <div>
-          <div style="font-weight:700;font-size:14px">${r.name}</div>
-          <div style="font-size:11px;color:#94a3b8">${[r.location,r.tenure].filter(Boolean).join(' · ')}</div>
+  try {
+    const data = await sbFetch('reviews?order=created_at.desc');
+    if (!data || !data.length) {
+      container.innerHTML = '<div style="color:#94a3b8;font-size:14px;padding:40px 0">No reviews yet. Click "+ Add Review" to get started.</div>';
+      return;
+    }
+    container.innerHTML = data.map(r => `
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          ${r.photo_url ? `<img src="${r.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">` :
+            `<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#c9a96e,#8b6f3c);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0">${r.initials||r.name.substring(0,2).toUpperCase()}</div>`}
+          <div>
+            <div style="font-weight:700;font-size:14px">${r.name}</div>
+            <div style="font-size:11px;color:#94a3b8">${[r.location,r.tenure].filter(Boolean).join(' · ')}</div>
+          </div>
+        </div>
+        <div style="color:#f59e0b;font-size:16px;margin-bottom:8px">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:12px;font-style:italic">"${r.comment}"</p>
+        <div style="display:flex;gap:8px">
+          <button onclick='openReviewModal(${JSON.stringify(r)})' style="flex:1;padding:7px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600">✏️ Edit</button>
+          <button onclick="deleteReview('${r.id}')" style="flex:1;padding:7px;border:1px solid #fee2e2;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#ef4444">🗑 Delete</button>
         </div>
       </div>
-      <div style="color:#f59e0b;font-size:16px;margin-bottom:8px">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
-      <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:12px;font-style:italic">"${r.comment}"</p>
-      <div style="display:flex;gap:8px">
-        <button onclick='openReviewModal(${JSON.stringify(r)})' style="flex:1;padding:7px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600">✏️ Edit</button>
-        <button onclick="deleteReview('${r.id}')" style="flex:1;padding:7px;border:1px solid #fee2e2;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#ef4444">🗑 Delete</button>
-      </div>
-    </div>
-  `).join('');
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:40px 0">Error loading reviews. Make sure the reviews table exists in Supabase.</div>';
+  }
 }
 
 async function deleteReview(id) {
   if (!confirm('Delete this review?')) return;
-  await supabase.from('reviews').delete().eq('id',id);
+  await sbFetch('reviews?id=eq.'+id, {method:'DELETE', prefer:'return=minimal'});
   showToast('Review deleted','success');
   await loadAdminReviews();
 }
 
 async function loadPublicReviews() {
-  const { data } = await supabase.from('reviews').select('*').order('created_at',{ascending:true});
+  try {
+  const data = await sbFetch('reviews?order=created_at.asc');
   if (!data || !data.length) return; // keep hardcoded fallback
   const track = document.getElementById('reviewsTrack');
   if (!track) return;
@@ -2065,6 +2072,7 @@ async function loadPublicReviews() {
     </div>
   `).join('');
   initReviewsCarousel();
+  } catch(e) { /* keep hardcoded fallback on error */ }
 }
 
 // ── GALLERY MANAGEMENT ──
