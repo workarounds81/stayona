@@ -35,4 +35,7 @@ html = html.replace('%%ADMIN_PASSWORD%%', ADMIN_PASSWORD)
 with open(os.path.join(script_dir, 'stayona-final.html'), 'w') as f:
     f.write(html)
 
+with open(os.path.join(script_dir, 'index.html'), 'w') as f:
+    f.write(html)
+
 print('Done! Size:', len(html), 'bytes')
