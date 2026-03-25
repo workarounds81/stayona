@@ -77,7 +77,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#111110;--off-white:#f7f6f3;--warm-white:#faf9f6;--sand:#e8e2d9;--stone:#9e9890;--accent:#c9a96e;--accent-dark:#a8854d;--green:#4a7c59}
 html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-y}
-body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1600px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
+body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;position:relative;touch-action:pan-x pan-y}
 /* NAV — transparent over banner, no logo */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
@@ -89,7 +89,7 @@ nav ul a:hover{color:var(--black)}
 .nav-partner:hover{background:var(--accent-dark)!important;color:#fff!important}
 /* BANNER HERO */
 .banner-hero{position:relative;width:100%;padding-top:72px;overflow:hidden}
-.banner-img{width:100%;display:block;height:clamp(460px,56vh,720px);object-fit:cover;object-position:center center}
+.banner-img{width:100%;display:block;height:auto}
 .banner-tagline{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 100%);padding:40px 52px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
 .banner-tagline h1{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,40px);color:#fff;line-height:1.2;letter-spacing:-0.01em;text-shadow:0 2px 16px rgba(0,0,0,0.4);flex:1;min-width:0}
 .banner-tagline h1 em{font-style:italic;color:var(--accent)}
@@ -1169,7 +1169,6 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 
   <!-- Partner footer -->
   <footer>
-    <div><img src="%%LOGO%%" alt="stayona" style="height:26px;filter:brightness(0) invert(1)"/></div>
     <div style="color:#555;font-size:13px">Property Management · Bangkok, Thailand</div>
     <div style="font-size:12px;color:#444">© 2026 Stayona</div>
   </footer>
