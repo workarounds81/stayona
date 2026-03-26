@@ -202,6 +202,34 @@ section{padding:80px 52px}
 .booking-item-info{flex:1;min-width:0}
 .booking-item-title{font-weight:700;font-size:14px;color:var(--black);margin-bottom:4px}
 .booking-item-dates{font-size:12px;color:#64748b;margin-bottom:4px}
+/* Bookings tab layout */
+.bk-layout{display:flex;gap:24px;min-height:400px}
+.bk-sidebar{width:210px;flex-shrink:0;border-right:1px solid #e2e8f0;padding-right:20px}
+.bk-sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;margin-bottom:12px}
+.bk-room-item{display:flex;flex-direction:column;padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.15s;border:none;width:100%;text-align:left;background:none}
+.bk-room-item:hover{background:#f5f5f0}
+.bk-room-item.active{background:var(--black);color:#fff}
+.bk-room-item.active .bk-room-sub{color:rgba(255,255,255,0.55)}
+.bk-room-name{font-weight:700;font-size:13px;color:inherit}
+.bk-room-sub{font-size:11px;color:#94a3b8;margin-top:2px}
+.bk-main{flex:1;min-width:0}
+.bk-no-room{text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
+.bk-year-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.bk-year-title{font-size:20px;font-weight:800;color:var(--black);flex:1}
+.bk-ynav{background:none;border:1px solid #e2e8f0;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:16px;font-weight:600;line-height:1}
+.bk-ynav:hover{background:#f5f5f0}
+.bk-year-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.bk-month-mini{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:10px 8px}
+.bk-month-name{font-size:11px;font-weight:700;color:var(--black);margin-bottom:6px;text-align:center;letter-spacing:0.02em}
+.bk-mini-days{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.bk-mini-label{text-align:center;font-size:8px;font-weight:600;color:#94a3b8;padding:1px 0;line-height:1.6}
+.bk-mini-cell{text-align:center;font-size:9px;padding:2px 1px;border-radius:2px;line-height:1.5;min-height:14px}
+.bk-mini-cell.blocked{background:#fef3c7;color:#92400e;font-weight:700}
+.bk-mini-cell.today{outline:1.5px solid var(--black);outline-offset:-1px;font-weight:700}
+.bk-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bk-section-title{font-size:15px;font-weight:700;color:var(--black)}
+.bk-new-btn{background:var(--black);color:#fff;border:none;border-radius:99px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.bk-new-btn:hover{opacity:0.82}
 .booking-item-actions{display:flex;gap:8px;flex-shrink:0}
 .booking-edit-row{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .booking-edit-row.open{display:flex}
@@ -1403,25 +1431,45 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     </div>
 
     <div id="tabBookings" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h3 style="font-size:18px;font-weight:700;color:var(--black)">📅 Bookings Calendar</h3>
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">📅 Bookings</div>
+          <div class="admin-subtitle">Select a property to view its year calendar and manage bookings</div>
+        </div>
         <button onclick="connectAndLoadBookings()" style="background:var(--black);color:#fff;border:none;border-radius:99px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">🔄 Sync Calendar</button>
       </div>
-      <div id="calConnectMsg" style="text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px">
+      <div id="calConnectMsg" style="text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px">
         Click <strong style="color:var(--black)">Sync Calendar</strong> to load bookings from Google Calendar
       </div>
       <div id="calContent" style="display:none">
-        <div class="bcal-wrap">
-          <div class="bcal-header">
-            <button class="bcal-nav" onclick="changeCalMonth(-1)">‹</button>
-            <div class="bcal-title" id="calMonthTitle"></div>
-            <button class="bcal-nav" onclick="changeCalMonth(1)">›</button>
+        <div class="bk-layout">
+          <!-- LEFT: Property list -->
+          <div class="bk-sidebar">
+            <div class="bk-sidebar-title">Properties</div>
+            <div id="bkRoomList"><div style="color:#94a3b8;font-size:13px">Loading...</div></div>
           </div>
-          <div class="bcal-grid" id="calGrid"></div>
+          <!-- RIGHT: Calendar + Bookings for selected property -->
+          <div class="bk-main">
+            <div id="bkNoRoom" class="bk-no-room">← Select a property to view its calendar</div>
+            <div id="bkRoomContent" style="display:none">
+              <!-- Year navigation -->
+              <div class="bk-year-nav">
+                <button class="bk-ynav" onclick="changeCalYear(-1)">‹</button>
+                <div class="bk-year-title" id="bkYearTitle">2026</div>
+                <button class="bk-ynav" onclick="changeCalYear(1)">›</button>
+              </div>
+              <!-- 12-month grid -->
+              <div class="bk-year-grid" id="bkYearGrid"></div>
+              <!-- Bookings list for this property -->
+              <div class="bk-section-hdr">
+                <div class="bk-section-title" id="bkListTitle">Bookings</div>
+                <button class="bk-new-btn" onclick="openNewBookingForRoom()">+ New Booking</button>
+              </div>
+              <div id="bookingsList"></div>
+              <div id="bookingsEmpty" style="display:none;text-align:center;padding:24px;color:#94a3b8;font-size:13px">No bookings for this property yet</div>
+            </div>
+          </div>
         </div>
-        <div style="font-weight:700;font-size:15px;color:var(--black);margin-bottom:12px">Bookings this month</div>
-        <div id="bookingsList"></div>
-        <div id="bookingsEmpty" style="display:none;text-align:center;padding:24px;color:#94a3b8;font-size:13px">No bookings this month</div>
       </div>
     </div>
 
@@ -1544,6 +1592,14 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
       <div class="form-group">
         <label>Check-out Date *</label>
         <input id="bmCheckOut" type="date"/>
+      </div>
+      <div class="form-group">
+        <label>Price Paid (฿)</label>
+        <input id="bmPrice" placeholder="e.g. 30000"/>
+      </div>
+      <div class="form-group">
+        <label>Deposit Paid (฿)</label>
+        <input id="bmDeposit" placeholder="e.g. 60000"/>
       </div>
       <div class="form-group full">
         <label>Notes</label>
@@ -2673,7 +2729,7 @@ function renderAdminTable() {
       <td><span class="tbl-badge ${r.listing_type==='real'?'tbl-real':'tbl-mkt'}">${r.listing_type==='real'?'Real':'Mkt'}</span></td>
       <td><div class="tbl-actions">
         <button class="btn-edit" onclick="openModal('${r.id}')">Edit</button>
-        ${r.listing_type!=='mkt'?`<button class="btn-book" onclick="openBookingManager('${r.id}','${r.name.replace(/'/g,"\'")}')">📅 Book</button>`:''}
+        ${r.listing_type!=='mkt'?`<button class="btn-book" onclick="switchToBookingsTab('${r.id}','${r.name.replace(/'/g,"\\'")}')">📅 Bookings</button>`:''}
         <button class="btn-delete" onclick="confirmDelete('${r.id}','${r.name.replace(/'/g,"\'")}')">Delete</button>
       </div></td>
     </tr>`;
@@ -3000,6 +3056,8 @@ function openBookingManager(id, name) {
   document.getElementById('bmContact').value = '';
   document.getElementById('bmCheckIn').value = '';
   document.getElementById('bmCheckOut').value = '';
+  document.getElementById('bmPrice').value = '';
+  document.getElementById('bmDeposit').value = '';
   document.getElementById('bmNotes').value = '';
   document.getElementById('bmError').style.display = 'none';
   document.getElementById('bmCalStatus').style.display = 'none';
@@ -3015,6 +3073,8 @@ async function saveBooking() {
   const contact = document.getElementById('bmContact').value.trim();
   const checkIn = document.getElementById('bmCheckIn').value;
   const checkOut= document.getElementById('bmCheckOut').value;
+  const price   = document.getElementById('bmPrice').value.trim();
+  const deposit = document.getElementById('bmDeposit').value.trim();
   const notes   = document.getElementById('bmNotes').value.trim();
 
   if (!tenant)  { showBmError('Please enter the tenant name.'); return; }
@@ -3029,7 +3089,7 @@ async function saveBooking() {
 
   pendingBookingEvent = {
     summary: `🏠 ${bookingRoomName} — ${tenant}`,
-    description: [`👤 Tenant: ${tenant}`, contact?`📱 Contact: ${contact}`:'', `🏠 Room: ${bookingRoomName}`, notes?`📝 Notes: ${notes}`:''].filter(Boolean).join('\n'),
+    description: buildBookingDesc({ tenant, contact, room: bookingRoomName, price, deposit, notes }),
     start: { date: checkIn },
     end:   { date: checkOut },
     colorId: '3',
@@ -3053,7 +3113,7 @@ async function pushToCalendar(event) {
     });
     if (!res.ok) throw new Error();
     document.getElementById('bmCalStatus').textContent = '✅ Added to Google Calendar!';
-    setTimeout(() => { closeBookingManager(); showToast('Booking added to calendar!', 'success'); }, 1200);
+    setTimeout(() => { closeBookingManager(); showToast('Booking added to calendar!', 'success'); fetchAndRenderBookings(); }, 1200);
   } catch(e) {
     showBmError('Failed to add to calendar. Please try again.');
   }
@@ -3105,8 +3165,11 @@ function loadGoogleAPI() {
   document.head.appendChild(s);
 }
 
-let calCurrentDate = new Date();
 let calEvents = [];
+let calViewYear = new Date().getFullYear();
+let selectedRoomId = null;
+let selectedRoomName = '';
+let pendingRoomSelect = null;
 
 function connectAndLoadBookings() {
   if (gCalAccessToken) {
@@ -3115,12 +3178,20 @@ function connectAndLoadBookings() {
     pendingCalAction = 'bookings';
     gCalTokenClient.requestAccessToken();
   } else {
-    // Google API not loaded yet, load it then connect
     pendingCalAction = 'bookings';
     loadGoogleAPI();
-    setTimeout(() => {
-      if (gCalTokenClient) gCalTokenClient.requestAccessToken();
-    }, 2000);
+    setTimeout(() => { if (gCalTokenClient) gCalTokenClient.requestAccessToken(); }, 2000);
+  }
+}
+
+// Navigate to bookings tab and pre-select a room
+function switchToBookingsTab(id, name) {
+  switchTab('bookings');
+  if (gCalAccessToken) {
+    selectBookingRoom(id, name);
+  } else {
+    pendingRoomSelect = { id, name };
+    connectAndLoadBookings();
   }
 }
 
@@ -3128,12 +3199,12 @@ async function fetchAndRenderBookings() {
   document.getElementById('calConnectMsg').style.display = 'none';
   document.getElementById('calContent').style.display = 'block';
 
-  // Fetch 3 months of events centered on current month
-  const start = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() - 1, 1);
-  const end = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + 2, 0);
+  // Fetch full year + buffer into next year
+  const start = new Date(calViewYear, 0, 1);
+  const end   = new Date(calViewYear + 1, 2, 1); // through Feb of next year to catch long stays
 
   try {
-    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&q=%F0%9F%8F%A0&singleEvents=true&orderBy=startTime&maxResults=100`;
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&q=%F0%9F%8F%A0&singleEvents=true&orderBy=startTime&maxResults=500`;
     const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + gCalAccessToken } });
     if (!res.ok) throw new Error();
     const data = await res.json();
@@ -3142,51 +3213,99 @@ async function fetchAndRenderBookings() {
     calEvents = [];
   }
 
-  renderBookingsCal();
-  renderBookingsList();
+  renderBookingsRoomList();
+
+  if (pendingRoomSelect) {
+    selectBookingRoom(pendingRoomSelect.id, pendingRoomSelect.name);
+    pendingRoomSelect = null;
+  } else if (selectedRoomId) {
+    renderYearCalendar();
+    renderRoomBookingsList();
+  }
 }
 
-function renderBookingsCal() {
-  const year = calCurrentDate.getFullYear();
-  const month = calCurrentDate.getMonth();
-  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('calMonthTitle').textContent = `${monthNames[month]} ${year}`;
+function renderBookingsRoomList() {
+  const list = document.getElementById('bkRoomList');
+  if (!list) return;
+  const realRooms = allRooms.filter(r => r.listing_type !== 'mkt');
+  if (!realRooms.length) {
+    list.innerHTML = '<div style="color:#94a3b8;font-size:13px">No properties found</div>';
+    return;
+  }
+  list.innerHTML = realRooms.map(r => `
+    <button class="bk-room-item${selectedRoomId===r.id?' active':''}" onclick="selectBookingRoom('${r.id}','${r.name.replace(/'/g,"\\'")}')">
+      <div class="bk-room-name">${r.name}</div>
+      <div class="bk-room-sub">${r.location||''}</div>
+    </button>`).join('');
+}
 
-  const today = new Date();
-  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+function selectBookingRoom(id, name) {
+  selectedRoomId = id;
+  selectedRoomName = name;
+  // Update sidebar active state
+  renderBookingsRoomList();
+  document.getElementById('bkNoRoom').style.display = 'none';
+  document.getElementById('bkRoomContent').style.display = 'block';
+  document.getElementById('bkYearTitle').textContent = calViewYear;
+  document.getElementById('bkListTitle').textContent = `Bookings — ${name}`;
+  renderYearCalendar();
+  renderRoomBookingsList();
+}
 
-  // Build set of blocked dates for this month
-  const blockedDates = new Set();
-  calEvents.forEach(ev => {
-    const start = new Date(ev.start.date || ev.start.dateTime);
-    const end = new Date(ev.end.date || ev.end.dateTime);
-    for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-      if (d.getFullYear() === year && d.getMonth() === month) {
-        blockedDates.add(d.getDate());
-      }
-    }
+function getEventsForRoom(roomName) {
+  return calEvents.filter(ev => {
+    const f = parseBookingDesc(ev.description || '');
+    if (f.room && f.room === roomName) return true;
+    // Fallback: check summary
+    return (ev.summary || '').includes(roomName);
   });
+}
 
-  const grid = document.getElementById('calGrid');
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  grid.innerHTML = days.map(d => `<div class="bcal-label">${d}</div>`).join('');
+function renderYearCalendar() {
+  const grid = document.getElementById('bkYearGrid');
+  if (!grid) return;
+  const year = calViewYear;
+  const today = new Date();
+  const roomEvents = getEventsForRoom(selectedRoomName);
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  // Empty cells before first day
-  for (let i = 0; i < firstDay; i++) {
-    grid.innerHTML += `<div class="bcal-cell empty"></div>`;
-  }
+  grid.innerHTML = monthNames.map((mname, month) => {
+    // Build blocked date set for this month
+    const blocked = new Set();
+    roomEvents.forEach(ev => {
+      const s = new Date(ev.start.date || ev.start.dateTime);
+      const e = new Date(ev.end.date || ev.end.dateTime);
+      for (let d = new Date(s); d < e; d.setDate(d.getDate() + 1)) {
+        if (d.getFullYear() === year && d.getMonth() === month) blocked.add(d.getDate());
+      }
+    });
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
-    const isBlocked = blockedDates.has(d);
-    const cls = [
-      'bcal-cell',
-      isBlocked ? 'blocked' : '',
-      isToday ? 'today' : ''
-    ].filter(Boolean).join(' ');
-    grid.innerHTML += `<div class="${cls}" title="${isBlocked?'Booked':'Available'}">${d}</div>`;
-  }
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let cells = ['S','M','T','W','T','F','S'].map(d => `<div class="bk-mini-label">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) cells += '<div class="bk-mini-cell"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+      const isBlocked = blocked.has(d);
+      let cls = 'bk-mini-cell';
+      if (isBlocked) cls += ' blocked';
+      if (isToday) cls += ' today';
+      cells += `<div class="${cls}">${d}</div>`;
+    }
+
+    return `<div class="bk-month-mini">
+      <div class="bk-month-name">${mname}</div>
+      <div class="bk-mini-days">${cells}</div>
+    </div>`;
+  }).join('');
+}
+
+function changeCalYear(dir) {
+  calViewYear += dir;
+  document.getElementById('bkYearTitle').textContent = calViewYear;
+  // Re-fetch events for the new year
+  fetchAndRenderBookings();
 }
 
 function fmtDate(iso) {
@@ -3218,28 +3337,26 @@ function buildBookingDesc(f) {
   ].filter(Boolean).join('\n');
 }
 
-function renderBookingsList() {
-  const year = calCurrentDate.getFullYear();
-  const month = calCurrentDate.getMonth();
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 0);
-
-  const monthEvents = calEvents.filter(ev => {
-    const start = new Date(ev.start.date || ev.start.dateTime);
-    const end = new Date(ev.end.date || ev.end.dateTime);
-    return start <= monthEnd && end >= monthStart;
-  });
+function renderRoomBookingsList() {
+  const roomEvents = getEventsForRoom(selectedRoomName);
 
   const list = document.getElementById('bookingsList');
   const empty = document.getElementById('bookingsEmpty');
 
-  if (!monthEvents.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  // Sort by start date
+  const sorted = [...roomEvents].sort((a,b) => {
+    const as = (a.start.date || a.start.dateTime || '');
+    const bs = (b.start.date || b.start.dateTime || '');
+    return as < bs ? -1 : as > bs ? 1 : 0;
+  });
+
+  if (!sorted.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
   const inp = 'border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:13px;width:100%;box-sizing:border-box;font-family:inherit';
   const lbl = 'font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:3px';
 
-  list.innerHTML = monthEvents.map(ev => {
+  list.innerHTML = sorted.map(ev => {
     const start = (ev.start.date || ev.start.dateTime || '').substring(0,10);
     const rawEnd = (ev.end.date || ev.end.dateTime || '').substring(0,10);
     const displayEnd = ev.end.date
@@ -3335,10 +3452,9 @@ async function cancelBookingEvent(eventId) {
   }
 }
 
-function changeCalMonth(dir) {
-  calCurrentDate = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + dir, 1);
-  renderBookingsCal();
-  renderBookingsList();
+function openNewBookingForRoom() {
+  if (!selectedRoomId || !selectedRoomName) return;
+  openBookingManager(selectedRoomId, selectedRoomName);
 }
 
 async function populateRoomDropdown() {
