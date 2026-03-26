@@ -3106,37 +3106,38 @@ async function submitBooking() {
   document.getElementById('bfSubmitText').textContent = 'Sending...';
 
   try {
-    // Send email via Formspree
-    const res = await fetch('https://api.web3forms.com/submit', {
+    // 1. Save to Supabase first (primary — always required)
+    await sbFetch('enquiries', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        access_key: W3F_KEY,
-        subject: '📅 New Room Enquiry — Stayona',
-        from_name: 'Stayona Website',
-        email: 'info@stayona.com',
-        Name:           name,
-        WhatsApp:       phone || '—',
-        'Enquirer Email': email || '—',
-        Room:           room,
-        'Move-in Date': moveIn,
-        'Viewing Date': viewing || '—',
-        Message:        message || '—',
+        name, phone: phone||null, email: email||null, room,
+        move_in_date: moveIn, viewing_date: viewing||null, message: message||null
       })
     });
 
-    const resJson = await res.json(); if (!resJson.success) throw new Error(resJson.message);
-
-    // Also save to Supabase as backup
+    // 2. Send email notification via Web3Forms (best-effort — don't block on failure)
     try {
-      await sbFetch('enquiries', {
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          name, phone: phone||null, email: email||null, room,
-          move_in_date: moveIn, viewing_date: viewing||null, message
+          access_key: W3F_KEY,
+          subject: '📅 New Room Enquiry — Stayona',
+          from_name: 'Stayona Website',
+          Name:           name,
+          WhatsApp:       phone || '—',
+          'Enquirer Email': email || '—',
+          Room:           room,
+          'Move-in Date': moveIn,
+          'Viewing Date': viewing || '—',
+          Message:        message || '—',
         })
       });
-    } catch(e) {}
+      const resJson = await res.json();
+      if (!resJson.success) console.warn('Web3Forms notice:', resJson.message);
+    } catch(emailErr) {
+      console.warn('Email notification failed (enquiry still saved):', emailErr);
+    }
 
     showBookingSuccess();
 
