@@ -919,6 +919,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
       <div class="rdm-desc" id="rdmDesc"></div>
       <div class="rdm-footer">
         <button class="rdm-cta" id="rdmCta" onclick="document.getElementById('roomDetailOverlay').classList.remove('open');document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Enquire Now →</button>
+        <button class="card-share-btn" id="rdmShareBtn" title="Share this listing" style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:#f5f5f0" onclick="shareCurrentRoom(event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
       </div>
     </div>
   </div>
@@ -1547,6 +1548,16 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
         </select>
         <div style="font-size:11px;color:#94a3b8;margin-top:4px">Real = bookable, shown as-is. Mkt = always shown Available, no Book button.</div>
       </div>
+      <div class="form-group"><label>Room Type / Bedrooms</label>
+        <select id="fRoomType" style="border-color:#e2e8f0">
+          <option value="">— Select type —</option>
+          <option value="studio">Studio</option>
+          <option value="1br">1 Bedroom</option>
+          <option value="2br">2 Bedrooms</option>
+          <option value="3br">3 Bedrooms</option>
+          <option value="4br">4 Bedrooms +</option>
+        </select>
+      </div>
       <div class="form-group full"><label>Amenities (comma separated)</label><input id="fAmenities" placeholder="AC, WiFi, Hot Water, City View, Kitchen"/></div>
       <div class="form-group full">
         <label>Description</label>
@@ -2153,6 +2164,13 @@ async function loadPublicRooms() {
 
     if (allRooms.length) {
       renderCarousel(allRooms);
+      // Deep link: auto-open room if URL has #room-{id}
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#room-')) {
+        const roomId = hash.slice(6);
+        const target = allRooms.find(r => r.id === roomId);
+        if (target) setTimeout(() => openRoomDetail(target.id), 300);
+      }
     } else {
       document.getElementById('roomsCarousel').innerHTML = '<div class="rooms-loading">No rooms listed yet. Check back soon!</div>';
     }
@@ -2468,7 +2486,7 @@ function renderCarousel(rooms) {
     const isMkt = r.listing_type === 'mkt';
     const displayStatus = 'available';
     const imgs = (r.images && r.images.length) ? r.images : ['%%IMG2%%'];
-    const amenities = (r.amenities||[]).slice(0,3).map(a=>`<span class="amenity-tag">${a}</span>`).join('');
+    const amenities = (r.amenities||[]).filter(a=>!a.startsWith('__type:')).slice(0,3).map(a=>`<span class="amenity-tag">${a}</span>`).join('');
     const bc = displayStatus==='available'?'badge-available':displayStatus==='occupied'?'badge-occupied':'badge-maintenance';
     const disabled = displayStatus!=='available'?'style="background:#ccc;color:#888;cursor:not-allowed"':'';
     const label = displayStatus==='available'?'Enquire':displayStatus==='occupied'?'Occupied':'Maintenance';
@@ -2476,7 +2494,7 @@ function renderCarousel(rooms) {
     const hasMap = r.map_url ? true : false;
     const slideImgs = imgs.map(i=>`<img src="${i}" alt="${r.name}"/>`).join('');
     const multiPhoto = imgs.length > 1;
-    return `<div class="room-card" onclick="openRoomDetail(${ri})">
+    return `<div class="room-card" onclick="openRoomDetail('${r.id}')">
       <div class="card-img-wrap" id="cw${ri}">
         <div class="card-slides" id="cs${ri}">${slideImgs}</div>
         ${multiPhoto ? `<button class="card-slide-btn prev" onclick="event.stopPropagation();cardSlide(${ri},-1)">&#8249;</button><button class="card-slide-btn next" onclick="event.stopPropagation();cardSlide(${ri},1)">&#8250;</button><div class="card-img-counter" id="cc${ri}">1/${imgs.length}</div>` : ''}
@@ -2488,7 +2506,7 @@ function renderCarousel(rooms) {
         <div class="room-footer">
           <div class="room-price">${formatPrice(r.rent)} <span>/mo</span></div>
           <div style="display:flex;align-items:center;gap:7px">
-            <button class="card-share-btn" title="Share this room" onclick="openSharePopup(event,'${r.name.replace(/'/g,"\\'")}',${r.rent},'${(r.location||'Bangkok').replace(/'/g,"\\'")}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+            <button class="card-share-btn" title="Share this room" onclick="openSharePopup(event,'${r.name.replace(/'/g,"\\'")}',${r.rent},'${(r.location||'Bangkok').replace(/'/g,"\\'")}','${r.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
             <button class="room-cta" ${disabled} onclick="event.stopPropagation();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${label}</button>
           </div>
         </div>
@@ -2579,10 +2597,19 @@ function cardSlide(ri, dir) {
 // ── ROOM DETAIL MODAL ──
 let rdmCurrentSlide = 0;
 let rdmImages = [];
+let currentRdmRoom = null;
 
-function openRoomDetail(ri) {
-  const r = allRooms[ri];
+function openRoomDetail(idOrIndex) {
+  let r;
+  if (typeof idOrIndex === 'string') {
+    r = allRooms.find(x => x.id === idOrIndex);
+  } else {
+    // Legacy numeric index — find in rendered order
+    r = allRooms[idOrIndex];
+  }
   if (!r) return;
+  currentRdmRoom = r;
+  history.replaceState(null, '', '#room-' + r.id);
   rdmImages = (r.images && r.images.length) ? r.images : ['%%IMG2%%'];
   rdmCurrentSlide = 0;
 
@@ -2617,7 +2644,7 @@ function openRoomDetail(ri) {
     <div><div class="rdm-detail-label">Lease</div><div class="rdm-detail-val">Monthly</div></div>
     <div><div class="rdm-detail-label">Status</div><div class="rdm-detail-val"><span class="room-badge ${bc}">${r.status}</span></div></div>`;
 
-  document.getElementById('rdmAmenities').innerHTML = (r.amenities||[]).map(a=>`<span class="amenity-tag">${a}</span>`).join('');
+  document.getElementById('rdmAmenities').innerHTML = (r.amenities||[]).filter(a=>!a.startsWith('__type:')).map(a=>`<span class="amenity-tag">${a}</span>`).join('');
 
   // Render description — handle HTML from Quill or legacy plain text
   const desc = r.description || '';
@@ -2700,6 +2727,8 @@ function updateRdmSlide() {
 
 function closeRoomDetail() {
   document.getElementById('roomDetailOverlay').classList.remove('open');
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  currentRdmRoom = null;
 }
 
 // ── MAP MODAL (fallback for rooms without map_url) ──
@@ -2722,9 +2751,22 @@ function closeMapModal() {
 async function loadAdminRooms() {
   try {
     allRooms = await getRooms();
+    await migrateRoomTypes();
     updateAdminStats();
     renderAdminTable();
   } catch(e) { showToast('Failed to load rooms','error'); }
+}
+
+// One-time migration: set rooms without a __type: to 1br
+async function migrateRoomTypes() {
+  const toUpdate = allRooms.filter(r => !(r.amenities||[]).some(a => a.startsWith('__type:')));
+  for (const r of toUpdate) {
+    const newAmenities = [...(r.amenities||[]), '__type:1br'];
+    try {
+      await sbFetch('rooms?id=eq.'+r.id, { method:'PATCH', body: JSON.stringify({ amenities: newAmenities }) });
+      r.amenities = newAmenities;
+    } catch(e) {}
+  }
 }
 function updateAdminStats() {
   const avail = allRooms.filter(r=>r.status==='available').length;
@@ -2775,7 +2817,9 @@ function openModal(id=null) {
     document.getElementById('fDeposit').value  = r.deposit||'';
     document.getElementById('fListingType').value = r.listing_type||'real';
     updateListingTypeStyle();
-    document.getElementById('fAmenities').value= (r.amenities||[]).join(', ');
+    const existingType = (r.amenities||[]).find(a => a.startsWith('__type:'));
+    document.getElementById('fRoomType').value = existingType ? existingType.replace('__type:','') : '';
+    document.getElementById('fAmenities').value= (r.amenities||[]).filter(a=>!a.startsWith('__type:')).join(', ');
     document.getElementById('fDesc').value     = r.description||'';
     if (window.quillEditor) {
       // Set HTML content — strip outer <p> if plain text stored
@@ -2790,7 +2834,7 @@ function openModal(id=null) {
       document.getElementById('imgUploadStatus').textContent = uploadedImageUrls.length + ' existing photos · drag to reorder';
     }
   } else {
-    ['fName','fProperty','fLocation','fMapUrl','fSize','fFloor','fRent','fDeposit','fAmenities'].forEach(x=>document.getElementById(x).value='');
+    ['fName','fProperty','fLocation','fMapUrl','fSize','fFloor','fRent','fDeposit','fAmenities','fRoomType'].forEach(x=>document.getElementById(x).value='');
     document.getElementById('fListingType').value = '';
     updateListingTypeStyle();
     if (window.quillEditor) window.quillEditor.setText('');
@@ -2829,7 +2873,7 @@ async function saveRoom() {
     floor:       document.getElementById('fFloor').value.trim(),
     deposit:     parseInt(document.getElementById('fDeposit').value)||0,
     status:      'available',
-    amenities:   document.getElementById('fAmenities').value.split(',').map(s=>s.trim()).filter(Boolean),
+    amenities:   (() => { const a = document.getElementById('fAmenities').value.split(',').map(s=>s.trim()).filter(s=>Boolean(s)&&!s.startsWith('__type:')); const rt = document.getElementById('fRoomType').value; if(rt) a.push('__type:'+rt); return a; })(),
     description: window.quillEditor ? window.quillEditor.root.innerHTML.replace(/<p><br><\/p>$/,'').trim() : document.getElementById('fDesc').value.trim(),
     listing_type: document.getElementById('fListingType').value || 'real',
     images:      uploadedImageUrls.length ? uploadedImageUrls : undefined,
@@ -2938,10 +2982,15 @@ function applySearch() {
     if (min > 0 && r.rent < min) return false;
     if (max > 0 && r.rent > max) return false;
     if (type) {
-      const hay = ((r.name||'') + ' ' + (r.description||'') + ' ' + (r.amenities||[]).join(' ')).toLowerCase();
-      const typeMap = { studio: 'studio', '1br': '1 bed', '2br': '2 bed', '3br': '3 bed', '4br': '4 bed' };
-      const needle = typeMap[type] || type;
-      if (!hay.includes(needle)) return false;
+      const storedType = (r.amenities||[]).find(a=>a.startsWith('__type:'));
+      if (storedType) {
+        if (storedType !== '__type:' + type) return false;
+      } else {
+        // fallback: text search
+        const hay = ((r.name||'') + ' ' + (r.description||'') + ' ' + (r.amenities||[]).join(' ')).toLowerCase();
+        const typeMap = { studio: 'studio', '1br': '1 bed', '2br': '2 bed', '3br': '3 bed', '4br': '4 bed' };
+        if (!hay.includes(typeMap[type]||type)) return false;
+      }
     }
     return true;
   });
@@ -2974,11 +3023,12 @@ function resetSearch() {
 // ── ROOM SHARE ──
 let _shareUrl = 'https://stayona.com';
 
-function openSharePopup(event, roomName, rent, location) {
+function openSharePopup(event, roomName, rent, location, roomId) {
   event.stopPropagation();
   const popup = document.getElementById('sharePopup');
-  const msg = `🏠 ${roomName}\n📍 ${location}\n💰 ฿${Number(rent).toLocaleString()}/mo\n\nMonthly rooms in Bangkok — Stayona\nhttps://stayona.com`;
-  _shareUrl = 'https://stayona.com';
+  const deepLink = roomId ? `https://stayona.com/#room-${roomId}` : 'https://stayona.com';
+  _shareUrl = deepLink;
+  const msg = `🏠 ${roomName}\n📍 ${location}\n💰 ฿${Number(rent).toLocaleString()}/mo\n\nMonthly rooms in Bangkok — Stayona\n${deepLink}`;
   document.getElementById('spWhatsApp').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
   document.getElementById('spLine').href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
   // Position near button
@@ -2986,6 +3036,12 @@ function openSharePopup(event, roomName, rent, location) {
   popup.style.top  = (rect.bottom + 6) + 'px';
   popup.style.left = Math.min(rect.left, window.innerWidth - 168) + 'px';
   popup.classList.add('open');
+}
+
+function shareCurrentRoom(event) {
+  if (!currentRdmRoom) return;
+  const r = currentRdmRoom;
+  openSharePopup(event, r.name, r.rent, r.location||'Bangkok', r.id);
 }
 
 function copyShareLink() {
