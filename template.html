@@ -3068,6 +3068,20 @@ function closeBookingManager() {
   document.getElementById('bookingModalOverlay').classList.remove('open');
 }
 
+// Check if proposed dates overlap any existing booking for a room
+// Returns the conflicting event or null
+function checkOverlap(roomName, checkIn, checkOut, excludeEventId = null) {
+  const newStart = new Date(checkIn);
+  const newEnd   = new Date(checkOut);
+  for (const ev of getEventsForRoom(roomName)) {
+    if (excludeEventId && ev.id === excludeEventId) continue;
+    const evStart = new Date(ev.start.date || ev.start.dateTime);
+    const evEnd   = new Date(ev.end.date   || ev.end.dateTime);
+    if (newStart < evEnd && evStart < newEnd) return ev;
+  }
+  return null;
+}
+
 async function saveBooking() {
   const tenant  = document.getElementById('bmTenant').value.trim();
   const contact = document.getElementById('bmContact').value.trim();
@@ -3081,6 +3095,15 @@ async function saveBooking() {
   if (!checkIn) { showBmError('Please select a check-in date.'); return; }
   if (!checkOut){ showBmError('Please select a check-out date.'); return; }
   if (checkOut <= checkIn) { showBmError('Check-out must be after check-in.'); return; }
+
+  // ── Overlap check against fetched calendar events ──
+  const conflict = checkOverlap(bookingRoomName, checkIn, checkOut);
+  if (conflict) {
+    const cs = fmtDate((conflict.start.date || conflict.start.dateTime || '').substring(0,10));
+    const ce = fmtDate((conflict.end.date   || conflict.end.dateTime   || '').substring(0,10));
+    showBmError(`❌ Dates clash with existing booking: "${conflict.summary}" (${cs} → ${ce}). Please choose different dates.`);
+    return;
+  }
 
   document.getElementById('bmSave').disabled = true;
   document.getElementById('bmSave').textContent = 'Connecting...';
@@ -3418,7 +3441,16 @@ async function saveBookingEdit(eventId) {
   // Preserve room name from existing event
   const existing = calEvents.find(e => e.id === eventId);
   const f = parseBookingDesc(existing ? existing.description : '');
-  const room = f.room || '';
+  const room = f.room || selectedRoomName || '';
+
+  // ── Overlap check (exclude the event being edited) ──
+  const conflict = checkOverlap(room, newStart, newEnd, eventId);
+  if (conflict) {
+    const cs = fmtDate((conflict.start.date || conflict.start.dateTime || '').substring(0,10));
+    const ce = fmtDate((conflict.end.date   || conflict.end.dateTime   || '').substring(0,10));
+    showToast(`❌ Clashes with "${conflict.summary}" (${cs}→${ce})`, 'error');
+    return;
+  }
 
   const newSummary = `🏠 ${room} — ${tenant||'Tenant'}`;
   const newDesc = buildBookingDesc({ tenant, contact, room, price, deposit, notes });
