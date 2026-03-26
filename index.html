@@ -3105,6 +3105,191 @@ function loadGoogleAPI() {
   document.head.appendChild(s);
 }
 
+let calCurrentDate = new Date();
+let calEvents = [];
+
+function connectAndLoadBookings() {
+  if (gCalAccessToken) {
+    fetchAndRenderBookings();
+  } else if (gCalTokenClient) {
+    pendingCalAction = 'bookings';
+    gCalTokenClient.requestAccessToken();
+  } else {
+    // Google API not loaded yet, load it then connect
+    pendingCalAction = 'bookings';
+    loadGoogleAPI();
+    setTimeout(() => {
+      if (gCalTokenClient) gCalTokenClient.requestAccessToken();
+    }, 2000);
+  }
+}
+
+async function fetchAndRenderBookings() {
+  document.getElementById('calConnectMsg').style.display = 'none';
+  document.getElementById('calContent').style.display = 'block';
+
+  // Fetch 3 months of events centered on current month
+  const start = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() - 1, 1);
+  const end = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + 2, 0);
+
+  try {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&q=%F0%9F%8F%A0&singleEvents=true&orderBy=startTime&maxResults=100`;
+    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + gCalAccessToken } });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    calEvents = (data.items || []).filter(e => e.summary && e.summary.includes('🏠'));
+  } catch(e) {
+    calEvents = [];
+  }
+
+  renderBookingsCal();
+  renderBookingsList();
+}
+
+function renderBookingsCal() {
+  const year = calCurrentDate.getFullYear();
+  const month = calCurrentDate.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthTitle').textContent = `${monthNames[month]} ${year}`;
+
+  const today = new Date();
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Build set of blocked dates for this month
+  const blockedDates = new Set();
+  calEvents.forEach(ev => {
+    const start = new Date(ev.start.date || ev.start.dateTime);
+    const end = new Date(ev.end.date || ev.end.dateTime);
+    for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        blockedDates.add(d.getDate());
+      }
+    }
+  });
+
+  const grid = document.getElementById('calGrid');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  grid.innerHTML = days.map(d => `<div class="bcal-label">${d}</div>`).join('');
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    grid.innerHTML += `<div class="bcal-cell empty"></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+    const isBlocked = blockedDates.has(d);
+    const cls = [
+      'bcal-cell',
+      isBlocked ? 'blocked' : '',
+      isToday ? 'today' : ''
+    ].filter(Boolean).join(' ');
+    grid.innerHTML += `<div class="${cls}" title="${isBlocked?'Booked':'Available'}">${d}</div>`;
+  }
+}
+
+function renderBookingsList() {
+  const year = calCurrentDate.getFullYear();
+  const month = calCurrentDate.getMonth();
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month + 1, 0);
+
+  const monthEvents = calEvents.filter(ev => {
+    const start = new Date(ev.start.date || ev.start.dateTime);
+    const end = new Date(ev.end.date || ev.end.dateTime);
+    return start <= monthEnd && end >= monthStart;
+  });
+
+  const list = document.getElementById('bookingsList');
+  const empty = document.getElementById('bookingsEmpty');
+
+  if (!monthEvents.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = monthEvents.map(ev => {
+    const start = (ev.start.date || ev.start.dateTime || '').substring(0,10);
+    const end = (ev.end.date || ev.end.dateTime || '').substring(0,10);
+    // Adjust display end date (Google Calendar end date is exclusive for all-day events)
+    const displayEnd = ev.end.date ? new Date(new Date(end).getTime() - 86400000).toISOString().substring(0,10) : end;
+    const title = ev.summary || 'Booking';
+    const desc = (ev.description || '').replace(/\n/g, '<br>');
+    return `
+    <div class="booking-item" id="bitem-${ev.id}">
+      <div class="booking-item-info">
+        <div class="booking-item-title">${title}</div>
+        <div class="booking-item-dates">📅 ${start} → ${displayEnd}</div>
+        ${desc ? `<div style="font-size:12px;color:#64748b;margin-top:4px">${desc}</div>` : ''}
+        <div class="booking-edit-row" id="editrow-${ev.id}">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#64748b">Check-in</label>
+            <input type="date" id="edit-start-${ev.id}" value="${start}" style="display:block;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:13px;margin-top:2px"/>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#64748b">Check-out</label>
+            <input type="date" id="edit-end-${ev.id}" value="${end}" style="display:block;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:13px;margin-top:2px"/>
+          </div>
+          <button onclick="saveBookingEdit('${ev.id}')" style="background:var(--black);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;margin-top:auto">Save</button>
+          <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;margin-top:auto">Cancel</button>
+        </div>
+      </div>
+      <div class="booking-item-actions">
+        <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>
+        <button onclick="cancelBookingEvent('${ev.id}')" style="background:#fee2e2;color:#991b1b;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">🗑 Cancel</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEditRow(eventId) {
+  const row = document.getElementById('editrow-' + eventId);
+  row.classList.toggle('open');
+}
+
+async function saveBookingEdit(eventId) {
+  const newStart = document.getElementById('edit-start-' + eventId).value;
+  const newEnd = document.getElementById('edit-end-' + eventId).value;
+  if (!newStart || !newEnd || newEnd <= newStart) { showToast('Invalid dates', 'error'); return; }
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + gCalAccessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start: { date: newStart }, end: { date: newEnd } })
+    });
+    if (!res.ok) throw new Error();
+    showToast('Booking dates updated!', 'success');
+    fetchAndRenderBookings();
+  } catch(e) {
+    showToast('Failed to update. Try reconnecting calendar.', 'error');
+  }
+}
+
+async function cancelBookingEvent(eventId) {
+  if (!confirm('Cancel this booking and remove from Google Calendar?')) return;
+  try {
+    const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + gCalAccessToken }
+    });
+    if (!res.ok && res.status !== 204) throw new Error();
+    showToast('Booking cancelled', 'success');
+    fetchAndRenderBookings();
+  } catch(e) {
+    showToast('Failed to cancel. Try reconnecting calendar.', 'error');
+  }
+}
+
+function changeCalMonth(dir) {
+  calCurrentDate = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + dir, 1);
+  renderBookingsCal();
+  renderBookingsList();
+}
+
 async function populateRoomDropdown() {
   try {
     const rooms = await getRooms();
