@@ -3189,6 +3189,35 @@ function renderBookingsCal() {
   }
 }
 
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const [y,m,d] = iso.substring(0,10).split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function parseBookingDesc(desc) {
+  const get = (label) => { const m = (desc||'').match(new RegExp(label+': (.+)')); return m ? m[1].trim() : ''; };
+  return {
+    tenant:  get('👤 Tenant'),
+    contact: get('📱 Contact'),
+    notes:   get('📝 Notes'),
+    price:   get('💰 Price Paid'),
+    deposit: get('🏦 Deposit Paid'),
+    room:    get('🏠 Room'),
+  };
+}
+
+function buildBookingDesc(f) {
+  return [
+    f.tenant  ? `👤 Tenant: ${f.tenant}`        : '',
+    f.contact ? `📱 Contact: ${f.contact}`      : '',
+    f.room    ? `🏠 Room: ${f.room}`             : '',
+    f.price   ? `💰 Price Paid: ${f.price}`      : '',
+    f.deposit ? `🏦 Deposit Paid: ${f.deposit}`  : '',
+    f.notes   ? `📝 Notes: ${f.notes}`           : '',
+  ].filter(Boolean).join('\n');
+}
+
 function renderBookingsList() {
   const year = calCurrentDate.getFullYear();
   const month = calCurrentDate.getMonth();
@@ -3204,42 +3233,50 @@ function renderBookingsList() {
   const list = document.getElementById('bookingsList');
   const empty = document.getElementById('bookingsEmpty');
 
-  if (!monthEvents.length) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+  if (!monthEvents.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
+
+  const inp = 'border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:13px;width:100%;box-sizing:border-box;font-family:inherit';
+  const lbl = 'font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:3px';
 
   list.innerHTML = monthEvents.map(ev => {
     const start = (ev.start.date || ev.start.dateTime || '').substring(0,10);
-    const end = (ev.end.date || ev.end.dateTime || '').substring(0,10);
-    // Adjust display end date (Google Calendar end date is exclusive for all-day events)
-    const displayEnd = ev.end.date ? new Date(new Date(end).getTime() - 86400000).toISOString().substring(0,10) : end;
+    const rawEnd = (ev.end.date || ev.end.dateTime || '').substring(0,10);
+    const displayEnd = ev.end.date
+      ? new Date(new Date(rawEnd).getTime() - 86400000).toISOString().substring(0,10) : rawEnd;
+    const f = parseBookingDesc(ev.description);
     const title = ev.summary || 'Booking';
-    const desc = (ev.description || '').replace(/\n/g, '<br>');
+
     return `
-    <div class="booking-item" id="bitem-${ev.id}">
-      <div class="booking-item-info">
-        <div class="booking-item-title">${title}</div>
-        <div class="booking-item-dates">📅 ${start} → ${displayEnd}</div>
-        ${desc ? `<div style="font-size:12px;color:#64748b;margin-top:4px">${desc}</div>` : ''}
-        <div class="booking-edit-row" id="editrow-${ev.id}">
-          <div>
-            <label style="font-size:11px;font-weight:600;color:#64748b">Check-in</label>
-            <input type="date" id="edit-start-${ev.id}" value="${start}" style="display:block;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:13px;margin-top:2px"/>
-          </div>
-          <div>
-            <label style="font-size:11px;font-weight:600;color:#64748b">Check-out</label>
-            <input type="date" id="edit-end-${ev.id}" value="${end}" style="display:block;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:13px;margin-top:2px"/>
-          </div>
-          <button onclick="saveBookingEdit('${ev.id}')" style="background:var(--black);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;margin-top:auto">Save</button>
-          <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;margin-top:auto">Cancel</button>
+    <div class="booking-item" id="bitem-${ev.id}" style="flex-direction:column;align-items:stretch">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <div class="booking-item-title">${title}</div>
+          <div class="booking-item-dates">📅 ${fmtDate(start)} → ${fmtDate(displayEnd)}</div>
+          ${f.contact ? `<div style="font-size:12px;color:#64748b">📱 ${f.contact}</div>` : ''}
+          ${f.price   ? `<div style="font-size:12px;color:#16a34a;font-weight:600">💰 Price paid: ${f.price}</div>` : ''}
+          ${f.deposit ? `<div style="font-size:12px;color:#2563eb;font-weight:600">🏦 Deposit: ${f.deposit}</div>` : ''}
+          ${f.notes   ? `<div style="font-size:12px;color:#94a3b8;margin-top:2px">📝 ${f.notes}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>
+          <button onclick="cancelBookingEvent('${ev.id}')" style="background:#fee2e2;color:#991b1b;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">🗑 Cancel</button>
         </div>
       </div>
-      <div class="booking-item-actions">
-        <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>
-        <button onclick="cancelBookingEvent('${ev.id}')" style="background:#fee2e2;color:#991b1b;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">🗑 Cancel</button>
+      <div id="editrow-${ev.id}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label style="${lbl}">Tenant Name</label><input id="edit-tenant-${ev.id}" value="${f.tenant}" style="${inp}" placeholder="Full name"/></div>
+          <div><label style="${lbl}">Contact (LINE / Phone)</label><input id="edit-contact-${ev.id}" value="${f.contact}" style="${inp}" placeholder="+66..."/></div>
+          <div><label style="${lbl}">Check-in</label><input type="date" id="edit-start-${ev.id}" value="${start}" style="${inp}"/></div>
+          <div><label style="${lbl}">Check-out</label><input type="date" id="edit-end-${ev.id}" value="${rawEnd}" style="${inp}"/></div>
+          <div><label style="${lbl}">Price Paid (฿)</label><input id="edit-price-${ev.id}" value="${f.price}" style="${inp}" placeholder="e.g. 30000"/></div>
+          <div><label style="${lbl}">Deposit Paid (฿)</label><input id="edit-deposit-${ev.id}" value="${f.deposit}" style="${inp}" placeholder="e.g. 60000"/></div>
+          <div style="grid-column:1/-1"><label style="${lbl}">Notes</label><input id="edit-notes-${ev.id}" value="${f.notes}" style="${inp}" placeholder="Any notes..."/></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button onclick="saveBookingEdit('${ev.id}')" style="background:var(--black);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer">Save Changes</button>
+          <button onclick="toggleEditRow('${ev.id}')" style="background:#f5f5f0;color:var(--black);border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer">Cancel</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -3247,22 +3284,36 @@ function renderBookingsList() {
 
 function toggleEditRow(eventId) {
   const row = document.getElementById('editrow-' + eventId);
-  row.classList.toggle('open');
+  row.style.display = row.style.display === 'none' ? 'block' : 'none';
 }
 
 async function saveBookingEdit(eventId) {
-  const newStart = document.getElementById('edit-start-' + eventId).value;
-  const newEnd = document.getElementById('edit-end-' + eventId).value;
+  const tenant  = document.getElementById('edit-tenant-'  + eventId).value.trim();
+  const contact = document.getElementById('edit-contact-' + eventId).value.trim();
+  const newStart= document.getElementById('edit-start-'   + eventId).value;
+  const newEnd  = document.getElementById('edit-end-'     + eventId).value;
+  const price   = document.getElementById('edit-price-'   + eventId).value.trim();
+  const deposit = document.getElementById('edit-deposit-' + eventId).value.trim();
+  const notes   = document.getElementById('edit-notes-'   + eventId).value.trim();
+
   if (!newStart || !newEnd || newEnd <= newStart) { showToast('Invalid dates', 'error'); return; }
+
+  // Preserve room name from existing event
+  const existing = calEvents.find(e => e.id === eventId);
+  const f = parseBookingDesc(existing ? existing.description : '');
+  const room = f.room || '';
+
+  const newSummary = `🏠 ${room} — ${tenant||'Tenant'}`;
+  const newDesc = buildBookingDesc({ tenant, contact, room, price, deposit, notes });
 
   try {
     const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
       method: 'PATCH',
       headers: { 'Authorization': 'Bearer ' + gCalAccessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start: { date: newStart }, end: { date: newEnd } })
+      body: JSON.stringify({ summary: newSummary, description: newDesc, start: { date: newStart }, end: { date: newEnd } })
     });
     if (!res.ok) throw new Error();
-    showToast('Booking dates updated!', 'success');
+    showToast('Booking updated!', 'success');
     fetchAndRenderBookings();
   } catch(e) {
     showToast('Failed to update. Try reconnecting calendar.', 'error');
