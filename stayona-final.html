@@ -1591,11 +1591,15 @@ let activeCurrency = 'THB';
 function formatPrice(thb) {
   const c = CURRENCIES[activeCurrency];
   const val = thb * c.rate;
-  const noDecimals = ['JPY','KRW','IDR','VND','INR','TWD','PHP'];
-  const rounded = noDecimals.includes(activeCurrency)
-    ? Math.round(val).toLocaleString()
-    : Math.round(val).toLocaleString();
-  return `${c.symbol}${rounded}`;
+  return `${c.symbol}${Math.round(val).toLocaleString()}`;
+}
+
+function formatBannerPrice(thb) {
+  const c = CURRENCIES[activeCurrency];
+  const val = thb * c.rate;
+  if (val >= 1000000) return `${c.symbol}${(val/1000000).toFixed(1).replace(/\.0$/,'')}M`;
+  if (val >= 1000)    return `${c.symbol}${(val/1000).toFixed(1).replace(/\.0$/,'')}k`;
+  return `${c.symbol}${Math.round(val).toLocaleString()}`;
 }
 
 function toggleCurrencyDropdown(e) {
@@ -1630,6 +1634,8 @@ function changeCurrency(code) {
   if (dd) dd.classList.remove('open');
   if (arrow) arrow.style.transform = '';
   if (allRooms.length) renderCarousel(allRooms);
+  const statEl = document.getElementById('statStarting');
+  if (statEl && statEl._thb) statEl.textContent = formatBannerPrice(statEl._thb);
   const rdm = document.getElementById('roomDetailModal');
   if (rdm && rdm.style.display !== 'none') {
     const priceEl = document.getElementById('rdmPrice');
@@ -2013,10 +2019,9 @@ async function loadPublicRooms() {
     // 2. Lowest starting price across available rooms
     if (avail.length) {
       const minRent = Math.min(...avail.map(r => r.rent));
-      const formatted = minRent >= 1000
-        ? '฿' + (minRent / 1000).toFixed(minRent % 1000 === 0 ? 0 : 1) + 'k'
-        : '฿' + minRent.toLocaleString();
-      document.getElementById('statStarting').textContent = formatted;
+      const el = document.getElementById('statStarting');
+      el._thb = minRent;
+      el.textContent = formatBannerPrice(minRent);
     } else {
       document.getElementById('statStarting').textContent = '—';
     }
