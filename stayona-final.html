@@ -81,14 +81,15 @@ body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--b
 /* NAV — transparent over banner, no logo */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
-nav ul{display:flex;gap:32px;list-style:none}
+nav ul{display:flex;gap:32px;list-style:none;align-items:center}
 nav ul a{text-decoration:none;font-size:14px;font-weight:600;color:rgba(0,0,0,0.7);transition:color 0.2s}
 nav ul a:hover{color:var(--black)}
 .nav-cta{background:var(--black)!important;color:#fff!important;padding:9px 20px;border-radius:99px;font-weight:600!important;font-size:13px!important}
 .currency-li{position:relative}
 .currency-btn{display:flex;align-items:center;gap:6px;background:var(--black);color:#fff;padding:9px 16px;border-radius:99px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;user-select:none;transition:opacity 0.2s}
 .currency-btn:hover{opacity:0.82}
-.currency-flag-img{font-size:16px;line-height:1}
+.currency-flag-img{width:20px;height:15px;border-radius:3px;object-fit:cover;flex-shrink:0}
+.cur-flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex-shrink:0}
 .currency-arrow{font-size:10px;opacity:0.7;transition:transform 0.25s}
 .currency-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #e8e8e8;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);min-width:210px;max-height:310px;overflow-y:auto;z-index:9999;scrollbar-width:thin;scrollbar-color:#ddd transparent}
 .currency-dropdown::-webkit-scrollbar{width:4px}
@@ -672,31 +673,31 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
     <li class="currency-li">
       <div class="currency-btn" id="currencyBtn" onclick="toggleCurrencyDropdown(event)">
-        <span class="currency-flag-img" id="currencyBtnFlag">🇹🇭</span>
+        <img class="currency-flag-img" id="currencyBtnFlag" src="https://flagcdn.com/20x15/th.png" alt="THB">
         <span id="currencyBtnCode">THB</span>
         <span class="currency-arrow" id="currencyArrow">▾</span>
       </div>
       <div class="currency-dropdown" id="currencyDropdown">
-        <div class="currency-option" onclick="changeCurrency('USD')"><span class="cur-flag">🇺🇸</span><div><div class="cur-code">USD</div><div class="cur-name">US Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('GBP')"><span class="cur-flag">🇬🇧</span><div><div class="cur-code">GBP</div><div class="cur-name">British Pound</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('EUR')"><span class="cur-flag">🇪🇺</span><div><div class="cur-code">EUR</div><div class="cur-name">Euro</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('AED')"><span class="cur-flag">🇦🇪</span><div><div class="cur-code">AED</div><div class="cur-name">UAE Dirham</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('SGD')"><span class="cur-flag">🇸🇬</span><div><div class="cur-code">SGD</div><div class="cur-name">Singapore Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('JPY')"><span class="cur-flag">🇯🇵</span><div><div class="cur-code">JPY</div><div class="cur-name">Japanese Yen</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('CNY')"><span class="cur-flag">🇨🇳</span><div><div class="cur-code">CNY</div><div class="cur-name">Chinese Yuan</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('KRW')"><span class="cur-flag">🇰🇷</span><div><div class="cur-code">KRW</div><div class="cur-name">South Korean Won</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('INR')"><span class="cur-flag">🇮🇳</span><div><div class="cur-code">INR</div><div class="cur-name">Indian Rupee</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('IDR')"><span class="cur-flag">🇮🇩</span><div><div class="cur-code">IDR</div><div class="cur-name">Indonesian Rupiah</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('THB')"><span class="cur-flag">🇹🇭</span><div><div class="cur-code">THB</div><div class="cur-name">Thai Baht</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('HKD')"><span class="cur-flag">🇭🇰</span><div><div class="cur-code">HKD</div><div class="cur-name">Hong Kong Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('MYR')"><span class="cur-flag">🇲🇾</span><div><div class="cur-code">MYR</div><div class="cur-name">Malaysian Ringgit</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('TWD')"><span class="cur-flag">🇹🇼</span><div><div class="cur-code">TWD</div><div class="cur-name">Taiwan Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('PHP')"><span class="cur-flag">🇵🇭</span><div><div class="cur-code">PHP</div><div class="cur-name">Philippine Peso</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('VND')"><span class="cur-flag">🇻🇳</span><div><div class="cur-code">VND</div><div class="cur-name">Vietnamese Dong</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('AUD')"><span class="cur-flag">🇦🇺</span><div><div class="cur-code">AUD</div><div class="cur-name">Australian Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('CAD')"><span class="cur-flag">🇨🇦</span><div><div class="cur-code">CAD</div><div class="cur-name">Canadian Dollar</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('CHF')"><span class="cur-flag">🇨🇭</span><div><div class="cur-code">CHF</div><div class="cur-name">Swiss Franc</div></div></div>
-        <div class="currency-option" onclick="changeCurrency('NZD')"><span class="cur-flag">🇳🇿</span><div><div class="cur-code">NZD</div><div class="cur-name">New Zealand Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('USD')"><img class="cur-flag" src="https://flagcdn.com/20x15/us.png" alt="USD"><div><div class="cur-code">USD</div><div class="cur-name">US Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('GBP')"><img class="cur-flag" src="https://flagcdn.com/20x15/gb.png" alt="GBP"><div><div class="cur-code">GBP</div><div class="cur-name">British Pound</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('EUR')"><img class="cur-flag" src="https://flagcdn.com/20x15/eu.png" alt="EUR"><div><div class="cur-code">EUR</div><div class="cur-name">Euro</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AED')"><img class="cur-flag" src="https://flagcdn.com/20x15/ae.png" alt="AED"><div><div class="cur-code">AED</div><div class="cur-name">UAE Dirham</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('SGD')"><img class="cur-flag" src="https://flagcdn.com/20x15/sg.png" alt="SGD"><div><div class="cur-code">SGD</div><div class="cur-name">Singapore Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('JPY')"><img class="cur-flag" src="https://flagcdn.com/20x15/jp.png" alt="JPY"><div><div class="cur-code">JPY</div><div class="cur-name">Japanese Yen</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CNY')"><img class="cur-flag" src="https://flagcdn.com/20x15/cn.png" alt="CNY"><div><div class="cur-code">CNY</div><div class="cur-name">Chinese Yuan</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('KRW')"><img class="cur-flag" src="https://flagcdn.com/20x15/kr.png" alt="KRW"><div><div class="cur-code">KRW</div><div class="cur-name">South Korean Won</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('INR')"><img class="cur-flag" src="https://flagcdn.com/20x15/in.png" alt="INR"><div><div class="cur-code">INR</div><div class="cur-name">Indian Rupee</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('IDR')"><img class="cur-flag" src="https://flagcdn.com/20x15/id.png" alt="IDR"><div><div class="cur-code">IDR</div><div class="cur-name">Indonesian Rupiah</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('THB')"><img class="cur-flag" src="https://flagcdn.com/20x15/th.png" alt="THB"><div><div class="cur-code">THB</div><div class="cur-name">Thai Baht</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('HKD')"><img class="cur-flag" src="https://flagcdn.com/20x15/hk.png" alt="HKD"><div><div class="cur-code">HKD</div><div class="cur-name">Hong Kong Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('MYR')"><img class="cur-flag" src="https://flagcdn.com/20x15/my.png" alt="MYR"><div><div class="cur-code">MYR</div><div class="cur-name">Malaysian Ringgit</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('TWD')"><img class="cur-flag" src="https://flagcdn.com/20x15/tw.png" alt="TWD"><div><div class="cur-code">TWD</div><div class="cur-name">Taiwan Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('PHP')"><img class="cur-flag" src="https://flagcdn.com/20x15/ph.png" alt="PHP"><div><div class="cur-code">PHP</div><div class="cur-name">Philippine Peso</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('VND')"><img class="cur-flag" src="https://flagcdn.com/20x15/vn.png" alt="VND"><div><div class="cur-code">VND</div><div class="cur-name">Vietnamese Dong</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AUD')"><img class="cur-flag" src="https://flagcdn.com/20x15/au.png" alt="AUD"><div><div class="cur-code">AUD</div><div class="cur-name">Australian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CAD')"><img class="cur-flag" src="https://flagcdn.com/20x15/ca.png" alt="CAD"><div><div class="cur-code">CAD</div><div class="cur-name">Canadian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CHF')"><img class="cur-flag" src="https://flagcdn.com/20x15/ch.png" alt="CHF"><div><div class="cur-code">CHF</div><div class="cur-name">Swiss Franc</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('NZD')"><img class="cur-flag" src="https://flagcdn.com/20x15/nz.png" alt="NZD"><div><div class="cur-code">NZD</div><div class="cur-name">New Zealand Dollar</div></div></div>
       </div>
     </li>
   </ul>
@@ -1564,26 +1565,26 @@ let editingId = null;
 let currentSlide = 0;
 
 const CURRENCIES = {
-  USD: { symbol: '$',   rate: 0.0278, flag: '🇺🇸', name: 'US Dollar' },
-  GBP: { symbol: '£',  rate: 0.0220, flag: '🇬🇧', name: 'British Pound' },
-  EUR: { symbol: '€',  rate: 0.0257, flag: '🇪🇺', name: 'Euro' },
-  AED: { symbol: 'AED ',rate:0.102,  flag: '🇦🇪', name: 'UAE Dirham' },
-  SGD: { symbol: 'S$', rate: 0.0374, flag: '🇸🇬', name: 'Singapore Dollar' },
-  JPY: { symbol: '¥',  rate: 4.19,  flag: '🇯🇵', name: 'Japanese Yen' },
-  CNY: { symbol: '¥',  rate: 0.201, flag: '🇨🇳', name: 'Chinese Yuan' },
-  KRW: { symbol: '₩',  rate: 38.5,  flag: '🇰🇷', name: 'South Korean Won' },
-  INR: { symbol: '₹',  rate: 2.37,  flag: '🇮🇳', name: 'Indian Rupee' },
-  IDR: { symbol: 'Rp', rate: 448,   flag: '🇮🇩', name: 'Indonesian Rupiah' },
-  THB: { symbol: '฿',  rate: 1,     flag: '🇹🇭', name: 'Thai Baht' },
-  HKD: { symbol: 'HK$',rate: 0.217, flag: '🇭🇰', name: 'Hong Kong Dollar' },
-  MYR: { symbol: 'RM', rate: 0.132, flag: '🇲🇾', name: 'Malaysian Ringgit' },
-  TWD: { symbol: 'NT$',rate: 0.917, flag: '🇹🇼', name: 'Taiwan Dollar' },
-  PHP: { symbol: '₱',  rate: 1.63,  flag: '🇵🇭', name: 'Philippine Peso' },
-  VND: { symbol: '₫',  rate: 720,   flag: '🇻🇳', name: 'Vietnamese Dong' },
-  AUD: { symbol: 'A$', rate: 0.0434,flag: '🇦🇺', name: 'Australian Dollar' },
-  CAD: { symbol: 'C$', rate: 0.0383,flag: '🇨🇦', name: 'Canadian Dollar' },
-  CHF: { symbol: 'Fr', rate: 0.0251,flag: '🇨🇭', name: 'Swiss Franc' },
-  NZD: { symbol: 'NZ$',rate: 0.0475,flag: '🇳🇿', name: 'New Zealand Dollar' },
+  USD: { symbol: '$',   rate: 0.0278, cc: 'us', name: 'US Dollar' },
+  GBP: { symbol: '£',  rate: 0.0220, cc: 'gb', name: 'British Pound' },
+  EUR: { symbol: '€',  rate: 0.0257, cc: 'eu', name: 'Euro' },
+  AED: { symbol: 'AED ',rate:0.102,  cc: 'ae', name: 'UAE Dirham' },
+  SGD: { symbol: 'S$', rate: 0.0374, cc: 'sg', name: 'Singapore Dollar' },
+  JPY: { symbol: '¥',  rate: 4.19,  cc: 'jp', name: 'Japanese Yen' },
+  CNY: { symbol: '¥',  rate: 0.201, cc: 'cn', name: 'Chinese Yuan' },
+  KRW: { symbol: '₩',  rate: 38.5,  cc: 'kr', name: 'South Korean Won' },
+  INR: { symbol: '₹',  rate: 2.37,  cc: 'in', name: 'Indian Rupee' },
+  IDR: { symbol: 'Rp', rate: 448,   cc: 'id', name: 'Indonesian Rupiah' },
+  THB: { symbol: '฿',  rate: 1,     cc: 'th', name: 'Thai Baht' },
+  HKD: { symbol: 'HK$',rate: 0.217, cc: 'hk', name: 'Hong Kong Dollar' },
+  MYR: { symbol: 'RM', rate: 0.132, cc: 'my', name: 'Malaysian Ringgit' },
+  TWD: { symbol: 'NT$',rate: 0.917, cc: 'tw', name: 'Taiwan Dollar' },
+  PHP: { symbol: '₱',  rate: 1.63,  cc: 'ph', name: 'Philippine Peso' },
+  VND: { symbol: '₫',  rate: 720,   cc: 'vn', name: 'Vietnamese Dong' },
+  AUD: { symbol: 'A$', rate: 0.0434,cc: 'au', name: 'Australian Dollar' },
+  CAD: { symbol: 'C$', rate: 0.0383,cc: 'ca', name: 'Canadian Dollar' },
+  CHF: { symbol: 'Fr', rate: 0.0251,cc: 'ch', name: 'Swiss Franc' },
+  NZD: { symbol: 'NZ$',rate: 0.0475,cc: 'nz', name: 'New Zealand Dollar' },
 };
 let activeCurrency = 'THB';
 
@@ -1624,7 +1625,7 @@ function changeCurrency(code) {
   const btnCode = document.getElementById('currencyBtnCode');
   const dd = document.getElementById('currencyDropdown');
   const arrow = document.getElementById('currencyArrow');
-  if (btnFlag) btnFlag.textContent = c.flag;
+  if (btnFlag) { btnFlag.src = `https://flagcdn.com/20x15/${c.cc}.png`; btnFlag.alt = code; }
   if (btnCode) btnCode.textContent = code;
   if (dd) dd.classList.remove('open');
   if (arrow) arrow.style.transform = '';
