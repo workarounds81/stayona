@@ -77,19 +77,37 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#111110;--off-white:#f7f6f3;--warm-white:#faf9f6;--sand:#e8e2d9;--stone:#9e9890;--accent:#c9a96e;--accent-dark:#a8854d;--green:#4a7c59}
 html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-y}
-body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:100%;position:relative;touch-action:pan-x pan-y}
+body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1700px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
 /* NAV — transparent over banner, no logo */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
-nav ul{display:flex;gap:32px;list-style:none}
+nav ul{display:flex;gap:32px;list-style:none;align-items:center}
 nav ul a{text-decoration:none;font-size:14px;font-weight:600;color:rgba(0,0,0,0.7);transition:color 0.2s}
 nav ul a:hover{color:var(--black)}
 .nav-cta{background:var(--black)!important;color:#fff!important;padding:9px 20px;border-radius:99px;font-weight:600!important;font-size:13px!important}
+.currency-li{position:relative}
+.currency-btn{display:flex;align-items:center;gap:6px;background:var(--black);color:#fff;padding:9px 16px;border-radius:99px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;user-select:none;transition:opacity 0.2s}
+.currency-btn:hover{opacity:0.82}
+.currency-flag-img{width:20px;height:15px;border-radius:3px;object-fit:cover;flex-shrink:0}
+.cur-flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex-shrink:0}
+.currency-arrow{font-size:10px;opacity:0.7;transition:transform 0.25s}
+.currency-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #e8e8e8;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);min-width:210px;max-height:310px;overflow-y:auto;z-index:9999;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+.currency-dropdown::-webkit-scrollbar{width:4px}
+.currency-dropdown::-webkit-scrollbar-track{background:transparent}
+.currency-dropdown::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+.currency-dropdown.open{display:block}
+.currency-option{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;transition:background 0.12s}
+.currency-option:hover{background:#f5f5f0}
+.currency-option:first-child{border-radius:14px 14px 0 0}
+.currency-option:last-child{border-radius:0 0 14px 14px}
+.cur-flag{font-size:18px;line-height:1;flex-shrink:0}
+.cur-code{font-weight:700;color:var(--black);font-size:13px}
+.cur-name{color:#999;font-size:11px;margin-top:1px}
 .nav-partner{background:var(--accent)!important;color:var(--black)!important;padding:9px 20px;border-radius:99px;font-weight:700!important;font-size:13px!important}
 .nav-partner:hover{background:var(--accent-dark)!important;color:#fff!important}
 /* BANNER HERO */
 .banner-hero{position:relative;width:100%;padding-top:72px;overflow:hidden}
-.banner-img{width:100%;display:block;max-height:480px;object-fit:cover;object-position:center top}
+.banner-img{width:100%;display:block;height:auto}
 .banner-tagline{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 100%);padding:40px 52px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
 .banner-tagline h1{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,40px);color:#fff;line-height:1.2;letter-spacing:-0.01em;text-shadow:0 2px 16px rgba(0,0,0,0.4);flex:1;min-width:0}
 .banner-tagline h1 em{font-style:italic;color:var(--accent)}
@@ -401,15 +419,15 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 /* Room detail modal */
 .room-detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1500;align-items:center;justify-content:center;padding:16px}
 .room-detail-overlay.open{display:flex}
-.room-detail-modal{background:#fff;border-radius:22px;overflow:hidden;width:820px;max-width:100%;max-height:92vh;display:flex;flex-direction:row}
-.rdm-gallery{position:relative;width:380px;height:380px;flex-shrink:0;overflow:hidden}
-.rdm-slides{display:flex;transition:transform 0.4s cubic-bezier(.4,0,.2,1);height:380px}
-.rdm-slides img{width:380px;min-width:380px;height:380px;object-fit:cover;flex-shrink:0}
+.room-detail-modal{background:#fff;border-radius:22px;overflow:hidden;width:1100px;max-width:100%;max-height:92vh;display:flex;flex-direction:row}
+.rdm-gallery{position:relative;width:560px;height:560px;flex-shrink:0;overflow:hidden}
+.rdm-slides{display:flex;transition:transform 0.4s cubic-bezier(.4,0,.2,1);height:560px}
+.rdm-slides img{width:560px;min-width:560px;height:560px;object-fit:cover;flex-shrink:0}
+.rdm-body{padding:28px;overflow-y:auto;flex:1;min-width:0;max-height:560px}
 .rdm-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.92);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;box-shadow:0 2px 12px rgba(0,0,0,0.2);z-index:5;display:flex;align-items:center;justify-content:center}
 .rdm-btn.prev{left:10px}.rdm-btn.next{right:10px}
 .rdm-counter{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.5);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px}
 .rdm-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;z-index:10;display:flex;align-items:center;justify-content:center}
-.rdm-body{padding:22px;overflow-y:auto;flex:1;min-width:0}
 .rdm-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
 .rdm-name{font-size:20px;font-weight:800;color:var(--black);letter-spacing:-0.02em}
 .rdm-price{font-size:22px;font-weight:900;color:var(--black);text-align:right;white-space:nowrap}
@@ -425,9 +443,9 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 .rdm-cta{flex:1;background:var(--black);color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s}
 .rdm-cta:hover{background:#333}
 /* Card photo mini-carousel */
-.card-img-wrap{position:relative;overflow:hidden;height:200px}
-.card-slides{display:flex;transition:transform 0.35s cubic-bezier(.4,0,.2,1);height:200px}
-.card-slides img{width:100%;height:200px;object-fit:cover;flex-shrink:0}
+.card-img-wrap{position:relative;overflow:hidden;aspect-ratio:1/1}
+.card-slides{display:flex;transition:transform 0.35s cubic-bezier(.4,0,.2,1);height:100%}
+.card-slides img{width:100%;height:100%;object-fit:cover;flex-shrink:0}
 .card-slide-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.88);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;z-index:4;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 6px rgba(0,0,0,0.18)}
 .card-slide-btn.prev{left:8px}.card-slide-btn.next{right:8px}
 .card-img-counter{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.5);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
@@ -653,6 +671,35 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="#partner" class="nav-partner" onclick="showPartner();return false">List Your Property</a></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
+    <li class="currency-li">
+      <div class="currency-btn" id="currencyBtn" onclick="toggleCurrencyDropdown(event)">
+        <img class="currency-flag-img" id="currencyBtnFlag" src="https://flagcdn.com/20x15/th.png" alt="THB">
+        <span id="currencyBtnCode">THB</span>
+        <span class="currency-arrow" id="currencyArrow">▾</span>
+      </div>
+      <div class="currency-dropdown" id="currencyDropdown">
+        <div class="currency-option" onclick="changeCurrency('USD')"><img class="cur-flag" src="https://flagcdn.com/20x15/us.png" alt="USD"><div><div class="cur-code">USD</div><div class="cur-name">US Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('GBP')"><img class="cur-flag" src="https://flagcdn.com/20x15/gb.png" alt="GBP"><div><div class="cur-code">GBP</div><div class="cur-name">British Pound</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('EUR')"><img class="cur-flag" src="https://flagcdn.com/20x15/eu.png" alt="EUR"><div><div class="cur-code">EUR</div><div class="cur-name">Euro</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AED')"><img class="cur-flag" src="https://flagcdn.com/20x15/ae.png" alt="AED"><div><div class="cur-code">AED</div><div class="cur-name">UAE Dirham</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('SGD')"><img class="cur-flag" src="https://flagcdn.com/20x15/sg.png" alt="SGD"><div><div class="cur-code">SGD</div><div class="cur-name">Singapore Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('JPY')"><img class="cur-flag" src="https://flagcdn.com/20x15/jp.png" alt="JPY"><div><div class="cur-code">JPY</div><div class="cur-name">Japanese Yen</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CNY')"><img class="cur-flag" src="https://flagcdn.com/20x15/cn.png" alt="CNY"><div><div class="cur-code">CNY</div><div class="cur-name">Chinese Yuan</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('KRW')"><img class="cur-flag" src="https://flagcdn.com/20x15/kr.png" alt="KRW"><div><div class="cur-code">KRW</div><div class="cur-name">South Korean Won</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('INR')"><img class="cur-flag" src="https://flagcdn.com/20x15/in.png" alt="INR"><div><div class="cur-code">INR</div><div class="cur-name">Indian Rupee</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('IDR')"><img class="cur-flag" src="https://flagcdn.com/20x15/id.png" alt="IDR"><div><div class="cur-code">IDR</div><div class="cur-name">Indonesian Rupiah</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('THB')"><img class="cur-flag" src="https://flagcdn.com/20x15/th.png" alt="THB"><div><div class="cur-code">THB</div><div class="cur-name">Thai Baht</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('HKD')"><img class="cur-flag" src="https://flagcdn.com/20x15/hk.png" alt="HKD"><div><div class="cur-code">HKD</div><div class="cur-name">Hong Kong Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('MYR')"><img class="cur-flag" src="https://flagcdn.com/20x15/my.png" alt="MYR"><div><div class="cur-code">MYR</div><div class="cur-name">Malaysian Ringgit</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('TWD')"><img class="cur-flag" src="https://flagcdn.com/20x15/tw.png" alt="TWD"><div><div class="cur-code">TWD</div><div class="cur-name">Taiwan Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('PHP')"><img class="cur-flag" src="https://flagcdn.com/20x15/ph.png" alt="PHP"><div><div class="cur-code">PHP</div><div class="cur-name">Philippine Peso</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('VND')"><img class="cur-flag" src="https://flagcdn.com/20x15/vn.png" alt="VND"><div><div class="cur-code">VND</div><div class="cur-name">Vietnamese Dong</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AUD')"><img class="cur-flag" src="https://flagcdn.com/20x15/au.png" alt="AUD"><div><div class="cur-code">AUD</div><div class="cur-name">Australian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CAD')"><img class="cur-flag" src="https://flagcdn.com/20x15/ca.png" alt="CAD"><div><div class="cur-code">CAD</div><div class="cur-name">Canadian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CHF')"><img class="cur-flag" src="https://flagcdn.com/20x15/ch.png" alt="CHF"><div><div class="cur-code">CHF</div><div class="cur-name">Swiss Franc</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('NZD')"><img class="cur-flag" src="https://flagcdn.com/20x15/nz.png" alt="NZD"><div><div class="cur-code">NZD</div><div class="cur-name">New Zealand Dollar</div></div></div>
+      </div>
+    </li>
   </ul>
 </nav>
 
@@ -942,10 +989,10 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     </div>
     <div class="booking-form-wrap">
 
-      <div id="bookingSuccess" class="booking-success" style="display:none">
-        <img src="%%LOGO%%" alt="Stayona" style="height:36px;margin-bottom:16px;opacity:0.85"/>
-        <div style="font-weight:800;font-size:20px;margin-bottom:8px;color:var(--black)">Thanks for reaching out!</div>
-        <div style="font-size:14px;color:#64748b;line-height:1.7">We'll be right with you. You should expect a reply within a couple of hours.</div>
+      <div id="bookingSuccess" class="booking-success" style="display:none;background:var(--black);border-radius:20px;margin:-32px;padding:52px 32px">
+        <img src="%%LOGO_WHITE%%" alt="Stayona" style="height:36px;margin-bottom:16px;opacity:0.9"/>
+        <div style="font-weight:800;font-size:20px;margin-bottom:8px;color:#fff">Thanks for reaching out!</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7">We'll be right with you. You should expect a reply within a couple of hours.</div>
       </div>
 
       <div id="bookingForm">
@@ -1015,7 +1062,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <a href="#contact">Contact</a>
     <a href="#" onclick="showLogin();window.scrollTo(0,0);return false">Admin</a>
   </div>
-  <div class="footer-copy">© 2025 Stayona. Bangkok, Thailand.</div>
+  <div class="footer-copy">© 2026 Stayona. Bangkok, Thailand.</div>
 </footer>
 
 <a class="float-line" href="#contact">
@@ -1169,9 +1216,8 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 
   <!-- Partner footer -->
   <footer>
-    <div><img src="%%LOGO_WHITE%%" alt="stayona" style="height:26px"/></div>
     <div style="color:#555;font-size:13px">Property Management · Bangkok, Thailand</div>
-    <div style="font-size:12px;color:#444">© 2025 Stayona</div>
+    <div style="font-size:12px;color:#444">© 2026 Stayona</div>
   </footer>
 
   </div><!-- end partner inner -->
@@ -1208,6 +1254,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <button class="admin-tab" onclick="switchTab('payments')">💰 Payments</button>
     <button class="admin-tab" onclick="switchTab('enquiries')">📋 Enquiries</button>
     <button class="admin-tab" onclick="switchTab('gallery')">🖼 Gallery</button>
+    <button class="admin-tab" onclick="switchTab('reviews')">⭐ Reviews</button>
   </div>
 
   <div class="admin-body">
@@ -1317,10 +1364,64 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
       </div>
     </div>
 
+    <!-- REVIEWS TAB -->
+    <div id="tabReviews" style="display:none">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">Reviews</div>
+          <div class="admin-subtitle">Manage testimonials shown on the public website</div>
+        </div>
+        <button class="btn-add" onclick="openReviewModal()">+ Add Review</button>
+      </div>
+      <div id="reviewsAdminList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:8px">
+        <div style="color:#94a3b8;font-size:14px;padding:40px 0">Loading reviews...</div>
+      </div>
+    </div>
+
   </div>
 </div>
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModalOverlay" style="display:none" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:560px" onclick="event.stopPropagation()">
+    <div class="modal-title" id="reviewModalTitle">Add Review</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Name *</label><input id="rvName" placeholder="e.g. Sarah M." oninput="updateReviewInitials()"/></div>
+      <div class="form-group"><label>Initials (auto-generated)</label><input id="rvInitials" placeholder="SM" style="background:#f1f5f9;cursor:default" readonly/></div>
+      <div class="form-group"><label>Nationality / Location</label><input id="rvLocation" placeholder="e.g. British"/></div>
+      <div class="form-group"><label>Tenure</label><input id="rvTenure" placeholder="e.g. 8 months"/></div>
+      <div class="form-group full">
+        <label>Star Rating *</label>
+        <div id="rvStarPicker" style="display:flex;gap:6px;font-size:32px;cursor:pointer;margin-top:4px">
+          <span onclick="setReviewStars(1)" class="rv-star">★</span>
+          <span onclick="setReviewStars(2)" class="rv-star">★</span>
+          <span onclick="setReviewStars(3)" class="rv-star">★</span>
+          <span onclick="setReviewStars(4)" class="rv-star">★</span>
+          <span onclick="setReviewStars(5)" class="rv-star">★</span>
+        </div>
+        <input type="hidden" id="rvStars" value="5"/>
+      </div>
+      <div class="form-group full"><label>Comment *</label><textarea id="rvComment" rows="4" placeholder='What did they say? e.g. "The room was spotless and the team was amazing."' style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea></div>
+      <div class="form-group full">
+        <label>Profile Photo (optional)</label>
+        <div class="img-upload-area" onclick="document.getElementById('rvPhotoInput').click()" style="padding:16px 20px">
+          <div style="font-size:22px;margin-bottom:4px">📷</div>
+          <div style="font-size:13px;font-weight:600;color:#374151">Click to upload photo</div>
+          <input type="file" id="rvPhotoInput" accept="image/*" style="display:none" onchange="previewReviewPhoto(event)"/>
+        </div>
+        <img id="rvPhotoPreview" style="display:none;width:64px;height:64px;border-radius:50%;object-fit:cover;margin-top:10px;border:2px solid #e2e8f0"/>
+        <input type="hidden" id="rvPhotoUrl"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn-save" id="rvBtnSave" onclick="saveReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="event.stopPropagation()">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="modalTitle">Add New Room</div>
     <div class="form-grid">
       <div class="form-group"><label>Room Name *</label><input id="fName" placeholder="e.g. Deluxe Studio A"/></div>
@@ -1463,6 +1564,87 @@ let allRooms = [];
 let editingId = null;
 let currentSlide = 0;
 
+const CURRENCIES = {
+  USD: { symbol: '$',   rate: 0.0278, cc: 'us', name: 'US Dollar' },
+  GBP: { symbol: '£',  rate: 0.0220, cc: 'gb', name: 'British Pound' },
+  EUR: { symbol: '€',  rate: 0.0257, cc: 'eu', name: 'Euro' },
+  AED: { symbol: 'AED ',rate:0.102,  cc: 'ae', name: 'UAE Dirham' },
+  SGD: { symbol: 'S$', rate: 0.0374, cc: 'sg', name: 'Singapore Dollar' },
+  JPY: { symbol: '¥',  rate: 4.19,  cc: 'jp', name: 'Japanese Yen' },
+  CNY: { symbol: '¥',  rate: 0.201, cc: 'cn', name: 'Chinese Yuan' },
+  KRW: { symbol: '₩',  rate: 38.5,  cc: 'kr', name: 'South Korean Won' },
+  INR: { symbol: '₹',  rate: 2.37,  cc: 'in', name: 'Indian Rupee' },
+  IDR: { symbol: 'Rp', rate: 448,   cc: 'id', name: 'Indonesian Rupiah' },
+  THB: { symbol: '฿',  rate: 1,     cc: 'th', name: 'Thai Baht' },
+  HKD: { symbol: 'HK$',rate: 0.217, cc: 'hk', name: 'Hong Kong Dollar' },
+  MYR: { symbol: 'RM', rate: 0.132, cc: 'my', name: 'Malaysian Ringgit' },
+  TWD: { symbol: 'NT$',rate: 0.917, cc: 'tw', name: 'Taiwan Dollar' },
+  PHP: { symbol: '₱',  rate: 1.63,  cc: 'ph', name: 'Philippine Peso' },
+  VND: { symbol: '₫',  rate: 720,   cc: 'vn', name: 'Vietnamese Dong' },
+  AUD: { symbol: 'A$', rate: 0.0434,cc: 'au', name: 'Australian Dollar' },
+  CAD: { symbol: 'C$', rate: 0.0383,cc: 'ca', name: 'Canadian Dollar' },
+  CHF: { symbol: 'Fr', rate: 0.0251,cc: 'ch', name: 'Swiss Franc' },
+  NZD: { symbol: 'NZ$',rate: 0.0475,cc: 'nz', name: 'New Zealand Dollar' },
+};
+let activeCurrency = 'THB';
+
+function formatPrice(thb) {
+  const c = CURRENCIES[activeCurrency];
+  const val = thb * c.rate;
+  return `${c.symbol}${Math.round(val).toLocaleString()}`;
+}
+
+function formatBannerPrice(thb) {
+  const c = CURRENCIES[activeCurrency];
+  const val = thb * c.rate;
+  if (val >= 1000000) return `${c.symbol}${(val/1000000).toFixed(1).replace(/\.0$/,'')}M`;
+  if (val >= 1000)    return `${c.symbol}${(val/1000).toFixed(1).replace(/\.0$/,'')}k`;
+  return `${c.symbol}${Math.round(val).toLocaleString()}`;
+}
+
+function toggleCurrencyDropdown(e) {
+  e && e.stopPropagation();
+  const dd = document.getElementById('currencyDropdown');
+  const arrow = document.getElementById('currencyArrow');
+  const isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.currency-li')) {
+    const dd = document.getElementById('currencyDropdown');
+    const arrow = document.getElementById('currencyArrow');
+    if (dd && dd.classList.contains('open')) {
+      dd.classList.remove('open');
+      if (arrow) arrow.style.transform = '';
+    }
+  }
+});
+
+function changeCurrency(code) {
+  activeCurrency = code;
+  const c = CURRENCIES[code];
+  const btnFlag = document.getElementById('currencyBtnFlag');
+  const btnCode = document.getElementById('currencyBtnCode');
+  const dd = document.getElementById('currencyDropdown');
+  const arrow = document.getElementById('currencyArrow');
+  if (btnFlag) { btnFlag.src = `https://flagcdn.com/20x15/${c.cc}.png`; btnFlag.alt = code; }
+  if (btnCode) btnCode.textContent = code;
+  if (dd) dd.classList.remove('open');
+  if (arrow) arrow.style.transform = '';
+  if (allRooms.length) renderCarousel(allRooms);
+  const statEl = document.getElementById('statStarting');
+  if (statEl && statEl._thb) statEl.textContent = formatBannerPrice(statEl._thb);
+  const rdm = document.getElementById('roomDetailModal');
+  if (rdm && rdm.style.display !== 'none') {
+    const priceEl = document.getElementById('rdmPrice');
+    const depEl = document.getElementById('rdmDeposit');
+    if (priceEl && priceEl._thb) priceEl.innerHTML = `${formatPrice(priceEl._thb)} <span>/mo</span>`;
+    if (depEl && depEl._thb !== undefined) depEl.textContent = depEl._thb ? `+ ${formatPrice(depEl._thb)} deposit` : '';
+  }
+}
+
 // ── SUPABASE ──
 async function sbFetch(path, opts={}) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -1486,16 +1668,17 @@ const deleteRoom  = id => sbFetch('rooms?id=eq.'+id, {method:'DELETE', prefer:'r
 
 // ── TABS ──
 function switchTab(tab) {
-  ['Rooms','Payments','Enquiries','Gallery'].forEach(t => {
+  ['Rooms','Payments','Enquiries','Gallery','Reviews'].forEach(t => {
     const el = document.getElementById('tab'+t);
     if (el) el.style.display = t.toLowerCase()===tab?'block':'none';
   });
   document.querySelectorAll('.admin-tab').forEach((el,i) => {
-    el.classList.toggle('active', ['rooms','payments','enquiries','gallery'][i]===tab);
+    el.classList.toggle('active', ['rooms','payments','enquiries','gallery','reviews'][i]===tab);
   });
   if (tab==='payments') loadPayments();
   if (tab==='enquiries') loadEnquiries();
   if (tab==='gallery') loadAdminGallery();
+  if (tab==='reviews') loadAdminReviews();
 }
 
 // ── IMAGE UPLOAD → SUPABASE STORAGE ──
@@ -1784,6 +1967,7 @@ function showPublic() {
   document.getElementById('adminPage').style.display = 'none';
   document.getElementById('partnerPage').style.display = 'none';
   loadPublicRooms();
+  loadPublicReviews();
   window.scrollTo(0,0);
 }
 function showPartner() {
@@ -1835,10 +2019,9 @@ async function loadPublicRooms() {
     // 2. Lowest starting price across available rooms
     if (avail.length) {
       const minRent = Math.min(...avail.map(r => r.rent));
-      const formatted = minRent >= 1000
-        ? '฿' + (minRent / 1000).toFixed(minRent % 1000 === 0 ? 0 : 1) + 'k'
-        : '฿' + minRent.toLocaleString();
-      document.getElementById('statStarting').textContent = formatted;
+      const el = document.getElementById('statStarting');
+      el._thb = minRent;
+      el.textContent = formatBannerPrice(minRent);
     } else {
       document.getElementById('statStarting').textContent = '—';
     }
@@ -1863,6 +2046,159 @@ async function loadPublicRooms() {
   } catch(e) {
     document.getElementById('roomsCarousel').innerHTML = '<div class="rooms-loading">Unable to load rooms right now — please refresh or contact us on LINE.</div>';
   }
+}
+
+// ── REVIEWS MANAGEMENT ──
+let editingReviewId = null;
+let currentReviewStars = 5;
+
+function setReviewStars(val) {
+  currentReviewStars = val;
+  document.getElementById('rvStars').value = val;
+  document.querySelectorAll('.rv-star').forEach((s,i) => {
+    s.style.color = i < val ? '#f59e0b' : '#cbd5e1';
+  });
+}
+
+function updateReviewInitials() {
+  const name = document.getElementById('rvName').value.trim();
+  const parts = name.split(' ').filter(Boolean);
+  const initials = parts.length >= 2 ? (parts[0][0]+parts[1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
+  document.getElementById('rvInitials').value = initials;
+}
+
+function openReviewModal(review) {
+  editingReviewId = review ? review.id : null;
+  document.getElementById('reviewModalTitle').textContent = review ? 'Edit Review' : 'Add Review';
+  document.getElementById('rvName').value = review ? review.name : '';
+  document.getElementById('rvInitials').value = review ? (review.initials||'') : '';
+  document.getElementById('rvLocation').value = review ? (review.location||'') : '';
+  document.getElementById('rvTenure').value = review ? (review.tenure||'') : '';
+  document.getElementById('rvComment').value = review ? (review.comment||'') : '';
+  document.getElementById('rvPhotoUrl').value = review ? (review.photo_url||'') : '';
+  const prev = document.getElementById('rvPhotoPreview');
+  if (review && review.photo_url) { prev.src = review.photo_url; prev.style.display = 'block'; }
+  else { prev.style.display = 'none'; }
+  setReviewStars(review ? (review.stars||5) : 5);
+  document.getElementById('reviewModalOverlay').style.display = 'flex';
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModalOverlay').style.display = 'none';
+  editingReviewId = null;
+}
+
+async function previewReviewPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const btn = document.getElementById('rvBtnSave');
+  btn.disabled = true; btn.textContent = 'Uploading...';
+  const ext = file.name.split('.').pop();
+  const filename = 'reviews/' + Date.now() + '.' + ext;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/images/${filename}`, {
+    method:'POST', headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type,'x-upsert':'true'}, body:file
+  });
+  if (res.ok) {
+    const url = `${SUPABASE_URL}/storage/v1/object/public/images/${filename}`;
+    document.getElementById('rvPhotoUrl').value = url;
+    const prev = document.getElementById('rvPhotoPreview');
+    prev.src = url; prev.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Save Review';
+}
+
+async function saveReview() {
+  const name = document.getElementById('rvName').value.trim();
+  const comment = document.getElementById('rvComment').value.trim();
+  if (!name || !comment) { showToast('Name and comment are required','error'); return; }
+  const btn = document.getElementById('rvBtnSave');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  const parts = name.split(' ').filter(Boolean);
+  const initials = document.getElementById('rvInitials').value.trim() ||
+    (parts.length >= 2 ? parts[0][0]+parts[1][0] : name.substring(0,2)).toUpperCase();
+  const data = {
+    name, initials,
+    location: document.getElementById('rvLocation').value.trim(),
+    tenure: document.getElementById('rvTenure').value.trim(),
+    stars: parseInt(document.getElementById('rvStars').value)||5,
+    comment,
+    photo_url: document.getElementById('rvPhotoUrl').value
+  };
+  try {
+    if (editingReviewId) {
+      await sbFetch('reviews?id=eq.'+editingReviewId, {method:'PATCH', body:JSON.stringify(data)});
+      showToast('Review updated!','success');
+    } else {
+      await sbFetch('reviews', {method:'POST', body:JSON.stringify(data)});
+      showToast('Review added!','success');
+    }
+    closeReviewModal();
+    await loadAdminReviews();
+  } catch(e) { showToast('Error saving review','error'); }
+  btn.disabled = false; btn.textContent = 'Save Review';
+}
+
+async function loadAdminReviews() {
+  const container = document.getElementById('reviewsAdminList');
+  container.innerHTML = '<div style="color:#94a3b8;font-size:14px;padding:40px 0">Loading...</div>';
+  try {
+    const data = await sbFetch('reviews?order=created_at.desc');
+    if (!data || !data.length) {
+      container.innerHTML = '<div style="color:#94a3b8;font-size:14px;padding:40px 0">No reviews yet. Click "+ Add Review" to get started.</div>';
+      return;
+    }
+    container.innerHTML = data.map(r => `
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          ${r.photo_url ? `<img src="${r.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">` :
+            `<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#c9a96e,#8b6f3c);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0">${r.initials||r.name.substring(0,2).toUpperCase()}</div>`}
+          <div>
+            <div style="font-weight:700;font-size:14px">${r.name}</div>
+            <div style="font-size:11px;color:#94a3b8">${[r.location,r.tenure].filter(Boolean).join(' · ')}</div>
+          </div>
+        </div>
+        <div style="color:#f59e0b;font-size:16px;margin-bottom:8px">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:12px;font-style:italic">"${r.comment}"</p>
+        <div style="display:flex;gap:8px">
+          <button onclick='openReviewModal(${JSON.stringify(r)})' style="flex:1;padding:7px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600">✏️ Edit</button>
+          <button onclick="deleteReview('${r.id}')" style="flex:1;padding:7px;border:1px solid #fee2e2;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#ef4444">🗑 Delete</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:40px 0">Error loading reviews. Make sure the reviews table exists in Supabase.</div>';
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Delete this review?')) return;
+  await sbFetch('reviews?id=eq.'+id, {method:'DELETE', prefer:'return=minimal'});
+  showToast('Review deleted','success');
+  await loadAdminReviews();
+}
+
+async function loadPublicReviews() {
+  try {
+  const data = await sbFetch('reviews?order=created_at.asc');
+  if (!data || !data.length) return; // keep hardcoded fallback
+  const track = document.getElementById('reviewsTrack');
+  if (!track) return;
+  track.innerHTML = data.map(r => `
+    <div class="review-card">
+      <div class="review-room-photo" style="${r.photo_url ? 'background-image:url('+JSON.stringify(r.photo_url)+')' : 'background:linear-gradient(135deg,#c9a96e,#8b6f3c)'}"></div>
+      <div class="stars">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+      <p class="review-text">"${r.comment}"</p>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="author-avatar">${r.initials||r.name.substring(0,2).toUpperCase()}</div>
+        <div>
+          <div class="author-name">${r.name}</div>
+          <div class="author-info">${[r.location,r.tenure].filter(Boolean).join(' · ')}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  initReviewsCarousel();
+  } catch(e) { /* keep hardcoded fallback on error */ }
 }
 
 // ── GALLERY MANAGEMENT ──
@@ -1960,22 +2296,24 @@ async function loadPublicGallery() {
 
 // ── REVIEWS CAROUSEL ──
 (function(){
-  const TOTAL = 9;
   let rIdx = 0;
+  function getTotal(){ return document.querySelectorAll('#reviewsTrack .review-card').length; }
   function getVis(){ return window.innerWidth<=600?1:window.innerWidth<=900?2:3; }
-  function moveReviews(dir){ const v=getVis(); rIdx=Math.max(0,Math.min(rIdx+dir,TOTAL-v)); updateReviews(); }
+  function moveReviews(dir){ const v=getVis(),tot=getTotal(); rIdx=Math.max(0,Math.min(rIdx+dir,tot-v)); updateReviews(); }
   function updateReviews(){
     const track=document.getElementById('reviewsTrack');
     const dots=document.getElementById('reviewsDots');
     if(!track)return;
-    const v=getVis(), gap=22;
+    const v=getVis(), gap=22, tot=getTotal();
+    rIdx=Math.min(rIdx,Math.max(0,tot-v));
     const cardW=(track.parentElement.offsetWidth-gap*(v-1))/v;
     track.style.transform=`translateX(-${rIdx*(cardW+gap)}px)`;
     track.querySelectorAll('.review-card').forEach(c=>{ c.style.flex=`0 0 ${cardW}px`; c.style.minWidth=`${cardW}px`; });
-    const nd=TOTAL-v+1;
-    dots.innerHTML=Array.from({length:nd},(_,i)=>`<button class="reviews-dot${i===rIdx?' active':''}" onclick="revGoTo(${i})"></button>`).join('');
+    const nd=Math.max(1,tot-v+1);
+    if(dots) dots.innerHTML=Array.from({length:nd},(_,i)=>`<button class="reviews-dot${i===rIdx?' active':''}" onclick="revGoTo(${i})"></button>`).join('');
   }
   window.revGoTo=function(i){ rIdx=i; updateReviews(); };
+  window.initReviewsCarousel=function(){ rIdx=0; updateReviews(); };
   let rts=0;
   document.addEventListener('DOMContentLoaded',()=>{
     const t=document.getElementById('reviewsTrack');
@@ -1985,6 +2323,7 @@ async function loadPublicGallery() {
     setTimeout(updateReviews,100);
   });
   window.addEventListener('resize',updateReviews);
+  window.moveReviews=moveReviews;
 })();
 
 // ── CAROUSEL ──
@@ -2030,7 +2369,7 @@ function renderCarousel(rooms) {
         <div class="room-location">📍 ${loc} ${hasMap ? `<a class="room-map-btn" href="${r.map_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺 Map</a>` : ''}</div>
         <div class="room-amenities">${amenities}</div>
         <div class="room-footer">
-          <div class="room-price">฿${r.rent.toLocaleString()} <span>/mo</span></div>
+          <div class="room-price">${formatPrice(r.rent)} <span>/mo</span></div>
           <button class="room-cta" ${disabled} onclick="event.stopPropagation();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${label}</button>
         </div>
       </div>
@@ -2145,8 +2484,12 @@ function openRoomDetail(ri) {
     locEl.appendChild(a);
   }
 
-  document.getElementById('rdmPrice').innerHTML = `฿${r.rent.toLocaleString()} <span>/mo</span>`;
-  document.getElementById('rdmDeposit').textContent = r.deposit ? `+ ฿${r.deposit.toLocaleString()} deposit` : '';
+  const _priceEl = document.getElementById('rdmPrice');
+  _priceEl._thb = r.rent;
+  _priceEl.innerHTML = `${formatPrice(r.rent)} <span>/mo</span>`;
+  const _depEl = document.getElementById('rdmDeposit');
+  _depEl._thb = r.deposit || 0;
+  _depEl.textContent = r.deposit ? `+ ${formatPrice(r.deposit)} deposit` : '';
 
   document.getElementById('rdmDetails').innerHTML = `
     <div><div class="rdm-detail-label">Size</div><div class="rdm-detail-val">${r.size||'—'}</div></div>
@@ -2767,8 +3110,19 @@ async function submitBooking() {
   btn.disabled = true;
   document.getElementById('bfSubmitText').textContent = 'Sending...';
 
+  // Save to Supabase (best-effort — silent on failure)
   try {
-    // Send email via Formspree
+    await sbFetch('enquiries', {
+      method: 'POST',
+      body: JSON.stringify({
+        name, phone: phone||null, email: email||null, room,
+        move_in_date: moveIn, viewing_date: viewing||null, message: message||null
+      })
+    });
+  } catch(e) { console.warn('Supabase enquiry save failed:', e); }
+
+  // Send email via Web3Forms (best-effort — silent on failure)
+  try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -2786,27 +3140,11 @@ async function submitBooking() {
         Message:        message || '—',
       })
     });
+    const resJson = await res.json();
+    if (!resJson.success) console.warn('Web3Forms notice:', resJson.message);
+  } catch(e) { console.warn('Web3Forms email failed:', e); }
 
-    const resJson = await res.json(); if (!resJson.success) throw new Error(resJson.message);
-
-    // Also save to Supabase as backup
-    try {
-      await sbFetch('enquiries', {
-        method: 'POST',
-        body: JSON.stringify({
-          name, phone: phone||null, email: email||null, room,
-          move_in_date: moveIn, viewing_date: viewing||null, message
-        })
-      });
-    } catch(e) {}
-
-    showBookingSuccess();
-
-  } catch(e) {
-    btn.disabled = false;
-    document.getElementById('bfSubmitText').textContent = 'Request Viewing →';
-    showBookingError('Something went wrong. Please try again or contact us on LINE.');
-  }
+  showBookingSuccess();
 }
 
 async function createCalendarEvent() {
@@ -2954,6 +3292,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   setInterval(snapBackZoom, 250);
   if (sessionStorage.getItem('stayona_auth')) showAdmin();
   else showPublic();
+  setReviewStars(5);
   // Modal stays open until Save or Cancel — no click-outside-to-close
   // document.getElementById('modalOverlay').addEventListener('click',e=>{
   //   if (e.target===document.getElementById('modalOverlay')) closeModal();

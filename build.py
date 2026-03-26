@@ -1,13 +1,17 @@
 import json
 
-with open('/home/claude/imgs.json') as f:
+import os
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(script_dir, 'imgs.json')) as f:
     imgs = json.load(f)
 
 SUPABASE_URL = 'https://qubwootdatrbpyipkrvw.supabase.co'
 SUPABASE_KEY = 'sb_publishable_soPXNzg_s8aLgyi6bsQEXw_sRpOEzZU'
 ADMIN_PASSWORD = 'stayona2025'
 
-html = open('/home/claude/template.html').read()
+html = open(os.path.join(script_dir, 'template.html')).read()
 
 html = html.replace('%%PARTNER_BANNER%%', imgs['partner_banner'])
 html = html.replace('%%BANNER%%', imgs['banner'])
@@ -28,7 +32,10 @@ html = html.replace('%%SUPABASE_URL%%', SUPABASE_URL)
 html = html.replace('%%SUPABASE_KEY%%', SUPABASE_KEY)
 html = html.replace('%%ADMIN_PASSWORD%%', ADMIN_PASSWORD)
 
-with open('/mnt/user-data/outputs/stayona-final.html', 'w') as f:
+with open(os.path.join(script_dir, 'stayona-final.html'), 'w') as f:
+    f.write(html)
+
+with open(os.path.join(script_dir, 'index.html'), 'w') as f:
     f.write(html)
 
 print('Done! Size:', len(html), 'bytes')
