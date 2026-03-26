@@ -77,7 +77,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#111110;--off-white:#f7f6f3;--warm-white:#faf9f6;--sand:#e8e2d9;--stone:#9e9890;--accent:#c9a96e;--accent-dark:#a8854d;--green:#4a7c59}
 html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-y}
-body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1600px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
+body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1700px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
 /* NAV — transparent over banner, no logo */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
@@ -85,6 +85,8 @@ nav ul{display:flex;gap:32px;list-style:none}
 nav ul a{text-decoration:none;font-size:14px;font-weight:600;color:rgba(0,0,0,0.7);transition:color 0.2s}
 nav ul a:hover{color:var(--black)}
 .nav-cta{background:var(--black)!important;color:#fff!important;padding:9px 20px;border-radius:99px;font-weight:600!important;font-size:13px!important}
+#currencySelect{appearance:none;-webkit-appearance:none;background:#f5f5f0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 8px center;border:1.5px solid #ddd;border-radius:99px;padding:7px 28px 7px 12px;font-size:13px;font-weight:600;font-family:inherit;color:var(--black);cursor:pointer;outline:none;transition:border-color 0.2s}
+#currencySelect:hover,#currencySelect:focus{border-color:var(--black)}
 .nav-partner{background:var(--accent)!important;color:var(--black)!important;padding:9px 20px;border-radius:99px;font-weight:700!important;font-size:13px!important}
 .nav-partner:hover{background:var(--accent-dark)!important;color:#fff!important}
 /* BANNER HERO */
@@ -652,6 +654,18 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="#partner" class="nav-partner" onclick="showPartner();return false">List Your Property</a></li>
+    <li><select id="currencySelect" onchange="changeCurrency(this.value)">
+      <option value="THB">฿ THB</option>
+      <option value="USD">$ USD</option>
+      <option value="EUR">€ EUR</option>
+      <option value="GBP">£ GBP</option>
+      <option value="SGD">S$ SGD</option>
+      <option value="AUD">A$ AUD</option>
+      <option value="JPY">¥ JPY</option>
+      <option value="HKD">HK$ HKD</option>
+      <option value="KRW">₩ KRW</option>
+      <option value="CNY">¥ CNY</option>
+    </select></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
 </nav>
@@ -1517,6 +1531,42 @@ let allRooms = [];
 let editingId = null;
 let currentSlide = 0;
 
+const CURRENCIES = {
+  THB: { symbol: '฿',  rate: 1 },
+  USD: { symbol: '$',  rate: 0.0278 },
+  EUR: { symbol: '€',  rate: 0.0257 },
+  GBP: { symbol: '£',  rate: 0.0220 },
+  SGD: { symbol: 'S$', rate: 0.0374 },
+  AUD: { symbol: 'A$', rate: 0.0434 },
+  JPY: { symbol: '¥',  rate: 4.19 },
+  HKD: { symbol: 'HK$',rate: 0.217 },
+  KRW: { symbol: '₩',  rate: 38.5 },
+  CNY: { symbol: '¥',  rate: 0.201 },
+};
+let activeCurrency = 'THB';
+
+function formatPrice(thb) {
+  const c = CURRENCIES[activeCurrency];
+  const val = thb * c.rate;
+  const rounded = activeCurrency === 'JPY' || activeCurrency === 'KRW'
+    ? Math.round(val).toLocaleString()
+    : val < 10 ? val.toFixed(2) : Math.round(val).toLocaleString();
+  return `${c.symbol}${rounded}`;
+}
+
+function changeCurrency(code) {
+  activeCurrency = code;
+  if (allRooms.length) renderCarousel(allRooms);
+  // update open modal if visible
+  const rdm = document.getElementById('roomDetailModal');
+  if (rdm && rdm.style.display !== 'none') {
+    const priceEl = document.getElementById('rdmPrice');
+    const depEl = document.getElementById('rdmDeposit');
+    if (priceEl && priceEl._thb) priceEl.innerHTML = `${formatPrice(priceEl._thb)} <span>/mo</span>`;
+    if (depEl && depEl._thb) depEl.textContent = `+ ${formatPrice(depEl._thb)} deposit`;
+  }
+}
+
 // ── SUPABASE ──
 async function sbFetch(path, opts={}) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -2242,7 +2292,7 @@ function renderCarousel(rooms) {
         <div class="room-location">📍 ${loc} ${hasMap ? `<a class="room-map-btn" href="${r.map_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺 Map</a>` : ''}</div>
         <div class="room-amenities">${amenities}</div>
         <div class="room-footer">
-          <div class="room-price">฿${r.rent.toLocaleString()} <span>/mo</span></div>
+          <div class="room-price">${formatPrice(r.rent)} <span>/mo</span></div>
           <button class="room-cta" ${disabled} onclick="event.stopPropagation();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${label}</button>
         </div>
       </div>
@@ -2357,8 +2407,12 @@ function openRoomDetail(ri) {
     locEl.appendChild(a);
   }
 
-  document.getElementById('rdmPrice').innerHTML = `฿${r.rent.toLocaleString()} <span>/mo</span>`;
-  document.getElementById('rdmDeposit').textContent = r.deposit ? `+ ฿${r.deposit.toLocaleString()} deposit` : '';
+  const _priceEl = document.getElementById('rdmPrice');
+  _priceEl._thb = r.rent;
+  _priceEl.innerHTML = `${formatPrice(r.rent)} <span>/mo</span>`;
+  const _depEl = document.getElementById('rdmDeposit');
+  _depEl._thb = r.deposit || 0;
+  _depEl.textContent = r.deposit ? `+ ${formatPrice(r.deposit)} deposit` : '';
 
   document.getElementById('rdmDetails').innerHTML = `
     <div><div class="rdm-detail-label">Size</div><div class="rdm-detail-val">${r.size||'—'}</div></div>
