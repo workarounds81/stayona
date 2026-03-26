@@ -230,6 +230,12 @@ section{padding:80px 52px}
 .bk-section-title{font-size:15px;font-weight:700;color:var(--black)}
 .bk-new-btn{background:var(--black);color:#fff;border:none;border-radius:99px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
 .bk-new-btn:hover{opacity:0.82}
+.card-share-btn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;padding:0}
+.card-share-btn:hover{background:#fff}
+.share-popup{display:none;position:fixed;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.14);z-index:99999;padding:5px;min-width:155px}
+.share-popup.open{display:block}
+.share-popup-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--black);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border:none;background:none;width:100%;font-family:inherit;box-sizing:border-box}
+.share-popup-item:hover{background:#f5f5f0}
 .booking-item-actions{display:flex;gap:8px;flex-shrink:0}
 .booking-edit-row{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .booking-edit-row.open{display:flex}
@@ -858,7 +864,8 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
         <div class="search-drop-item" onclick="setType('studio',this)">Studio</div>
         <div class="search-drop-item" onclick="setType('1br',this)">1 Bedroom</div>
         <div class="search-drop-item" onclick="setType('2br',this)">2 Bedrooms</div>
-        <div class="search-drop-item" onclick="setType('room',this)">Single Room</div>
+        <div class="search-drop-item" onclick="setType('3br',this)">3 Bedrooms</div>
+        <div class="search-drop-item" onclick="setType('4br',this)">4 Bedrooms +</div>
       </div>
     </div>
 
@@ -1572,6 +1579,19 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 </div>
 
 <!-- BOOKING MANAGER MODAL -->
+<!-- SHARE POPUP -->
+<div id="sharePopup" class="share-popup">
+  <a id="spWhatsApp" class="share-popup-item" href="#" target="_blank" rel="noopener">
+    <span style="font-size:16px">💬</span><span style="color:#25D366">WhatsApp</span>
+  </a>
+  <a id="spLine" class="share-popup-item" href="#" target="_blank" rel="noopener">
+    <span style="font-size:16px">💚</span><span style="color:#06C755">LINE</span>
+  </a>
+  <button class="share-popup-item" onclick="copyShareLink()">
+    <span style="font-size:14px">🔗</span> Copy Link
+  </button>
+</div>
+
 <div class="modal-overlay" id="bookingModalOverlay">
   <div class="modal" style="max-width:480px">
     <div class="modal-title" id="bookingModalTitle">📅 Book Room</div>
@@ -2467,7 +2487,10 @@ function renderCarousel(rooms) {
         <div class="room-amenities">${amenities}</div>
         <div class="room-footer">
           <div class="room-price">${formatPrice(r.rent)} <span>/mo</span></div>
-          <button class="room-cta" ${disabled} onclick="event.stopPropagation();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${label}</button>
+          <div style="display:flex;align-items:center;gap:7px">
+            <button class="card-share-btn" title="Share this room" onclick="openSharePopup(event,'${r.name.replace(/'/g,"\\'")}',${r.rent},'${(r.location||'Bangkok').replace(/'/g,"\\'")}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+            <button class="room-cta" ${disabled} onclick="event.stopPropagation();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${label}</button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -2872,7 +2895,7 @@ function setLoc(val, el) {
 
 function setType(val, el) {
   searchFilters.type = val;
-  const labels = {'':'Any type','studio':'Studio','1br':'1 Bedroom','2br':'2 Bedrooms','room':'Single Room'};
+  const labels = {'':'Any type','studio':'Studio','1br':'1 Bedroom','2br':'2 Bedrooms','3br':'3 Bedrooms','4br':'4 Bedrooms +'};
   document.getElementById('typeDisplay').textContent = labels[val] || 'Any type';
   document.querySelectorAll('#typeDrop .search-drop-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
@@ -2916,7 +2939,7 @@ function applySearch() {
     if (max > 0 && r.rent > max) return false;
     if (type) {
       const hay = ((r.name||'') + ' ' + (r.description||'') + ' ' + (r.amenities||[]).join(' ')).toLowerCase();
-      const typeMap = { studio: 'studio', '1br': '1 bed', '2br': '2 bed', room: 'room' };
+      const typeMap = { studio: 'studio', '1br': '1 bed', '2br': '2 bed', '3br': '3 bed', '4br': '4 bed' };
       const needle = typeMap[type] || type;
       if (!hay.includes(needle)) return false;
     }
@@ -2947,6 +2970,37 @@ function resetSearch() {
   const btn = document.querySelector('.search-btn');
   if (btn) btn.textContent = 'Search Rooms →';
 }
+
+// ── ROOM SHARE ──
+let _shareUrl = 'https://stayona.com';
+
+function openSharePopup(event, roomName, rent, location) {
+  event.stopPropagation();
+  const popup = document.getElementById('sharePopup');
+  const msg = `🏠 ${roomName}\n📍 ${location}\n💰 ฿${Number(rent).toLocaleString()}/mo\n\nMonthly rooms in Bangkok — Stayona\nhttps://stayona.com`;
+  _shareUrl = 'https://stayona.com';
+  document.getElementById('spWhatsApp').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+  document.getElementById('spLine').href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+  // Position near button
+  const rect = event.currentTarget.getBoundingClientRect();
+  popup.style.top  = (rect.bottom + 6) + 'px';
+  popup.style.left = Math.min(rect.left, window.innerWidth - 168) + 'px';
+  popup.classList.add('open');
+}
+
+function copyShareLink() {
+  navigator.clipboard.writeText(_shareUrl).then(() => {
+    showToast('Link copied!', 'success');
+  }).catch(() => {
+    showToast('https://stayona.com', 'success');
+  });
+  document.getElementById('sharePopup').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  const popup = document.getElementById('sharePopup');
+  if (popup && !popup.contains(e.target)) popup.classList.remove('open');
+});
 
 
 // ── WEB3FORMS EMAIL ──
