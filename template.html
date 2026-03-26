@@ -3105,8 +3105,8 @@ async function submitBooking() {
   btn.disabled = true;
   document.getElementById('bfSubmitText').textContent = 'Sending...';
 
+  // Save to Supabase (best-effort — silent on failure)
   try {
-    // 1. Save to Supabase first (primary — always required)
     await sbFetch('enquiries', {
       method: 'POST',
       body: JSON.stringify({
@@ -3114,38 +3114,32 @@ async function submitBooking() {
         move_in_date: moveIn, viewing_date: viewing||null, message: message||null
       })
     });
+  } catch(e) { console.warn('Supabase enquiry save failed:', e); }
 
-    // 2. Send email notification via Web3Forms (best-effort — don't block on failure)
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: W3F_KEY,
-          subject: '📅 New Room Enquiry — Stayona',
-          from_name: 'Stayona Website',
-          Name:           name,
-          WhatsApp:       phone || '—',
-          'Enquirer Email': email || '—',
-          Room:           room,
-          'Move-in Date': moveIn,
-          'Viewing Date': viewing || '—',
-          Message:        message || '—',
-        })
-      });
-      const resJson = await res.json();
-      if (!resJson.success) console.warn('Web3Forms notice:', resJson.message);
-    } catch(emailErr) {
-      console.warn('Email notification failed (enquiry still saved):', emailErr);
-    }
+  // Send email via Web3Forms (best-effort — silent on failure)
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: W3F_KEY,
+        subject: '📅 New Room Enquiry — Stayona',
+        from_name: 'Stayona Website',
+        email: 'info@stayona.com',
+        Name:           name,
+        WhatsApp:       phone || '—',
+        'Enquirer Email': email || '—',
+        Room:           room,
+        'Move-in Date': moveIn,
+        'Viewing Date': viewing || '—',
+        Message:        message || '—',
+      })
+    });
+    const resJson = await res.json();
+    if (!resJson.success) console.warn('Web3Forms notice:', resJson.message);
+  } catch(e) { console.warn('Web3Forms email failed:', e); }
 
-    showBookingSuccess();
-
-  } catch(e) {
-    btn.disabled = false;
-    document.getElementById('bfSubmitText').textContent = 'Request Viewing →';
-    showBookingError('Something went wrong. Please try again or contact us on LINE.');
-  }
+  showBookingSuccess();
 }
 
 async function createCalendarEvent() {
