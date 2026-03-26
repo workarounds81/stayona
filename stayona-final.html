@@ -85,8 +85,23 @@ nav ul{display:flex;gap:32px;list-style:none}
 nav ul a{text-decoration:none;font-size:14px;font-weight:600;color:rgba(0,0,0,0.7);transition:color 0.2s}
 nav ul a:hover{color:var(--black)}
 .nav-cta{background:var(--black)!important;color:#fff!important;padding:9px 20px;border-radius:99px;font-weight:600!important;font-size:13px!important}
-#currencySelect{appearance:none;-webkit-appearance:none;background:#f5f5f0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 8px center;border:1.5px solid #ddd;border-radius:99px;padding:7px 28px 7px 12px;font-size:13px;font-weight:600;font-family:inherit;color:var(--black);cursor:pointer;outline:none;transition:border-color 0.2s}
-#currencySelect:hover,#currencySelect:focus{border-color:var(--black)}
+.currency-li{position:relative}
+.currency-btn{display:flex;align-items:center;gap:6px;background:var(--black);color:#fff;padding:9px 16px;border-radius:99px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;user-select:none;transition:opacity 0.2s}
+.currency-btn:hover{opacity:0.82}
+.currency-flag-img{font-size:16px;line-height:1}
+.currency-arrow{font-size:10px;opacity:0.7;transition:transform 0.25s}
+.currency-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #e8e8e8;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);min-width:210px;max-height:310px;overflow-y:auto;z-index:9999;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+.currency-dropdown::-webkit-scrollbar{width:4px}
+.currency-dropdown::-webkit-scrollbar-track{background:transparent}
+.currency-dropdown::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+.currency-dropdown.open{display:block}
+.currency-option{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;transition:background 0.12s}
+.currency-option:hover{background:#f5f5f0}
+.currency-option:first-child{border-radius:14px 14px 0 0}
+.currency-option:last-child{border-radius:0 0 14px 14px}
+.cur-flag{font-size:18px;line-height:1;flex-shrink:0}
+.cur-code{font-weight:700;color:var(--black);font-size:13px}
+.cur-name{color:#999;font-size:11px;margin-top:1px}
 .nav-partner{background:var(--accent)!important;color:var(--black)!important;padding:9px 20px;border-radius:99px;font-weight:700!important;font-size:13px!important}
 .nav-partner:hover{background:var(--accent-dark)!important;color:#fff!important}
 /* BANNER HERO */
@@ -654,19 +669,36 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="#partner" class="nav-partner" onclick="showPartner();return false">List Your Property</a></li>
-    <li><select id="currencySelect" onchange="changeCurrency(this.value)">
-      <option value="THB">฿ THB</option>
-      <option value="USD">$ USD</option>
-      <option value="EUR">€ EUR</option>
-      <option value="GBP">£ GBP</option>
-      <option value="SGD">S$ SGD</option>
-      <option value="AUD">A$ AUD</option>
-      <option value="JPY">¥ JPY</option>
-      <option value="HKD">HK$ HKD</option>
-      <option value="KRW">₩ KRW</option>
-      <option value="CNY">¥ CNY</option>
-    </select></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
+    <li class="currency-li">
+      <div class="currency-btn" id="currencyBtn" onclick="toggleCurrencyDropdown(event)">
+        <span class="currency-flag-img" id="currencyBtnFlag">🇹🇭</span>
+        <span id="currencyBtnCode">THB</span>
+        <span class="currency-arrow" id="currencyArrow">▾</span>
+      </div>
+      <div class="currency-dropdown" id="currencyDropdown">
+        <div class="currency-option" onclick="changeCurrency('USD')"><span class="cur-flag">🇺🇸</span><div><div class="cur-code">USD</div><div class="cur-name">US Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('GBP')"><span class="cur-flag">🇬🇧</span><div><div class="cur-code">GBP</div><div class="cur-name">British Pound</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('EUR')"><span class="cur-flag">🇪🇺</span><div><div class="cur-code">EUR</div><div class="cur-name">Euro</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AED')"><span class="cur-flag">🇦🇪</span><div><div class="cur-code">AED</div><div class="cur-name">UAE Dirham</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('SGD')"><span class="cur-flag">🇸🇬</span><div><div class="cur-code">SGD</div><div class="cur-name">Singapore Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('JPY')"><span class="cur-flag">🇯🇵</span><div><div class="cur-code">JPY</div><div class="cur-name">Japanese Yen</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CNY')"><span class="cur-flag">🇨🇳</span><div><div class="cur-code">CNY</div><div class="cur-name">Chinese Yuan</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('KRW')"><span class="cur-flag">🇰🇷</span><div><div class="cur-code">KRW</div><div class="cur-name">South Korean Won</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('INR')"><span class="cur-flag">🇮🇳</span><div><div class="cur-code">INR</div><div class="cur-name">Indian Rupee</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('IDR')"><span class="cur-flag">🇮🇩</span><div><div class="cur-code">IDR</div><div class="cur-name">Indonesian Rupiah</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('THB')"><span class="cur-flag">🇹🇭</span><div><div class="cur-code">THB</div><div class="cur-name">Thai Baht</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('HKD')"><span class="cur-flag">🇭🇰</span><div><div class="cur-code">HKD</div><div class="cur-name">Hong Kong Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('MYR')"><span class="cur-flag">🇲🇾</span><div><div class="cur-code">MYR</div><div class="cur-name">Malaysian Ringgit</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('TWD')"><span class="cur-flag">🇹🇼</span><div><div class="cur-code">TWD</div><div class="cur-name">Taiwan Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('PHP')"><span class="cur-flag">🇵🇭</span><div><div class="cur-code">PHP</div><div class="cur-name">Philippine Peso</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('VND')"><span class="cur-flag">🇻🇳</span><div><div class="cur-code">VND</div><div class="cur-name">Vietnamese Dong</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('AUD')"><span class="cur-flag">🇦🇺</span><div><div class="cur-code">AUD</div><div class="cur-name">Australian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CAD')"><span class="cur-flag">🇨🇦</span><div><div class="cur-code">CAD</div><div class="cur-name">Canadian Dollar</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('CHF')"><span class="cur-flag">🇨🇭</span><div><div class="cur-code">CHF</div><div class="cur-name">Swiss Franc</div></div></div>
+        <div class="currency-option" onclick="changeCurrency('NZD')"><span class="cur-flag">🇳🇿</span><div><div class="cur-code">NZD</div><div class="cur-name">New Zealand Dollar</div></div></div>
+      </div>
+    </li>
   </ul>
 </nav>
 
@@ -1532,38 +1564,77 @@ let editingId = null;
 let currentSlide = 0;
 
 const CURRENCIES = {
-  THB: { symbol: '฿',  rate: 1 },
-  USD: { symbol: '$',  rate: 0.0278 },
-  EUR: { symbol: '€',  rate: 0.0257 },
-  GBP: { symbol: '£',  rate: 0.0220 },
-  SGD: { symbol: 'S$', rate: 0.0374 },
-  AUD: { symbol: 'A$', rate: 0.0434 },
-  JPY: { symbol: '¥',  rate: 4.19 },
-  HKD: { symbol: 'HK$',rate: 0.217 },
-  KRW: { symbol: '₩',  rate: 38.5 },
-  CNY: { symbol: '¥',  rate: 0.201 },
+  USD: { symbol: '$',   rate: 0.0278, flag: '🇺🇸', name: 'US Dollar' },
+  GBP: { symbol: '£',  rate: 0.0220, flag: '🇬🇧', name: 'British Pound' },
+  EUR: { symbol: '€',  rate: 0.0257, flag: '🇪🇺', name: 'Euro' },
+  AED: { symbol: 'AED ',rate:0.102,  flag: '🇦🇪', name: 'UAE Dirham' },
+  SGD: { symbol: 'S$', rate: 0.0374, flag: '🇸🇬', name: 'Singapore Dollar' },
+  JPY: { symbol: '¥',  rate: 4.19,  flag: '🇯🇵', name: 'Japanese Yen' },
+  CNY: { symbol: '¥',  rate: 0.201, flag: '🇨🇳', name: 'Chinese Yuan' },
+  KRW: { symbol: '₩',  rate: 38.5,  flag: '🇰🇷', name: 'South Korean Won' },
+  INR: { symbol: '₹',  rate: 2.37,  flag: '🇮🇳', name: 'Indian Rupee' },
+  IDR: { symbol: 'Rp', rate: 448,   flag: '🇮🇩', name: 'Indonesian Rupiah' },
+  THB: { symbol: '฿',  rate: 1,     flag: '🇹🇭', name: 'Thai Baht' },
+  HKD: { symbol: 'HK$',rate: 0.217, flag: '🇭🇰', name: 'Hong Kong Dollar' },
+  MYR: { symbol: 'RM', rate: 0.132, flag: '🇲🇾', name: 'Malaysian Ringgit' },
+  TWD: { symbol: 'NT$',rate: 0.917, flag: '🇹🇼', name: 'Taiwan Dollar' },
+  PHP: { symbol: '₱',  rate: 1.63,  flag: '🇵🇭', name: 'Philippine Peso' },
+  VND: { symbol: '₫',  rate: 720,   flag: '🇻🇳', name: 'Vietnamese Dong' },
+  AUD: { symbol: 'A$', rate: 0.0434,flag: '🇦🇺', name: 'Australian Dollar' },
+  CAD: { symbol: 'C$', rate: 0.0383,flag: '🇨🇦', name: 'Canadian Dollar' },
+  CHF: { symbol: 'Fr', rate: 0.0251,flag: '🇨🇭', name: 'Swiss Franc' },
+  NZD: { symbol: 'NZ$',rate: 0.0475,flag: '🇳🇿', name: 'New Zealand Dollar' },
 };
 let activeCurrency = 'THB';
 
 function formatPrice(thb) {
   const c = CURRENCIES[activeCurrency];
   const val = thb * c.rate;
-  const rounded = activeCurrency === 'JPY' || activeCurrency === 'KRW'
+  const noDecimals = ['JPY','KRW','IDR','VND','INR','TWD','PHP'];
+  const rounded = noDecimals.includes(activeCurrency)
     ? Math.round(val).toLocaleString()
-    : val < 10 ? val.toFixed(2) : Math.round(val).toLocaleString();
+    : Math.round(val).toLocaleString();
   return `${c.symbol}${rounded}`;
 }
 
+function toggleCurrencyDropdown(e) {
+  e && e.stopPropagation();
+  const dd = document.getElementById('currencyDropdown');
+  const arrow = document.getElementById('currencyArrow');
+  const isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.currency-li')) {
+    const dd = document.getElementById('currencyDropdown');
+    const arrow = document.getElementById('currencyArrow');
+    if (dd && dd.classList.contains('open')) {
+      dd.classList.remove('open');
+      if (arrow) arrow.style.transform = '';
+    }
+  }
+});
+
 function changeCurrency(code) {
   activeCurrency = code;
+  const c = CURRENCIES[code];
+  const btnFlag = document.getElementById('currencyBtnFlag');
+  const btnCode = document.getElementById('currencyBtnCode');
+  const dd = document.getElementById('currencyDropdown');
+  const arrow = document.getElementById('currencyArrow');
+  if (btnFlag) btnFlag.textContent = c.flag;
+  if (btnCode) btnCode.textContent = code;
+  if (dd) dd.classList.remove('open');
+  if (arrow) arrow.style.transform = '';
   if (allRooms.length) renderCarousel(allRooms);
-  // update open modal if visible
   const rdm = document.getElementById('roomDetailModal');
   if (rdm && rdm.style.display !== 'none') {
     const priceEl = document.getElementById('rdmPrice');
     const depEl = document.getElementById('rdmDeposit');
     if (priceEl && priceEl._thb) priceEl.innerHTML = `${formatPrice(priceEl._thb)} <span>/mo</span>`;
-    if (depEl && depEl._thb) depEl.textContent = `+ ${formatPrice(depEl._thb)} deposit`;
+    if (depEl && depEl._thb !== undefined) depEl.textContent = depEl._thb ? `+ ${formatPrice(depEl._thb)} deposit` : '';
   }
 }
 
