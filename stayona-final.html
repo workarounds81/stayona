@@ -3175,7 +3175,7 @@ function loadGoogleAPI() {
         // Determine which flow triggered this
         if (pendingCalAction === 'bookings') {
           pendingCalAction = null;
-          fetchAndRenderBookings();
+          fetchAndRenderBookings(true);
         } else if (pendingBookingEvent) {
           pushToCalendar(pendingBookingEvent);
           pendingBookingEvent = null;
@@ -3196,7 +3196,7 @@ let pendingRoomSelect = null;
 
 function connectAndLoadBookings() {
   if (gCalAccessToken) {
-    fetchAndRenderBookings();
+    fetchAndRenderBookings(true);
   } else if (gCalTokenClient) {
     pendingCalAction = 'bookings';
     gCalTokenClient.requestAccessToken();
@@ -3218,7 +3218,7 @@ function switchToBookingsTab(id, name) {
   }
 }
 
-async function fetchAndRenderBookings() {
+async function fetchAndRenderBookings(showSyncToast = false) {
   document.getElementById('calConnectMsg').style.display = 'none';
   document.getElementById('calContent').style.display = 'block';
 
@@ -3226,14 +3226,20 @@ async function fetchAndRenderBookings() {
   const start = new Date(calViewYear, 0, 1);
   const end   = new Date(calViewYear + 1, 2, 1); // through Feb of next year to catch long stays
 
+  let fetchOk = false;
   try {
     const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&q=%F0%9F%8F%A0&singleEvents=true&orderBy=startTime&maxResults=500`;
     const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + gCalAccessToken } });
     if (!res.ok) throw new Error();
     const data = await res.json();
     calEvents = (data.items || []).filter(e => e.summary && e.summary.includes('🏠'));
+    fetchOk = true;
   } catch(e) {
     calEvents = [];
+  }
+
+  if (showSyncToast) {
+    showToast(fetchOk ? '✅ Calendar synced successfully' : '⚠️ Sync failed — check connection', fetchOk ? 'success' : 'error');
   }
 
   renderBookingsRoomList();
@@ -3470,17 +3476,21 @@ async function saveBookingEdit(eventId) {
 }
 
 async function cancelBookingEvent(eventId) {
-  if (!confirm('Cancel this booking and remove from Google Calendar?')) return;
+  if (!confirm('Remove this booking from Google Calendar? This cannot be undone.')) return;
+  // Find the button and show loading state
+  const btn = document.querySelector(`[onclick="cancelBookingEvent('${eventId}')"]`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Removing...'; }
   try {
     const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + gCalAccessToken }
     });
-    if (!res.ok && res.status !== 204) throw new Error();
-    showToast('Booking cancelled', 'success');
+    if (!res.ok && res.status !== 204) throw new Error('Delete failed: ' + res.status);
+    showToast('✅ Booking removed from Google Calendar', 'success');
     fetchAndRenderBookings();
   } catch(e) {
-    showToast('Failed to cancel. Try reconnecting calendar.', 'error');
+    showToast('❌ Failed to remove — try syncing calendar first', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '🗑 Cancel'; }
   }
 }
 
