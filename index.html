@@ -138,7 +138,8 @@
 html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-y}
 body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1700px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
+.nav-logo-main{position:absolute;left:52px;top:50%;transform:translateY(-50%)}
 .nav-logo-main img{height:28px;display:block}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
 nav ul{display:flex;gap:32px;list-style:none;align-items:center}
@@ -585,6 +586,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
   nav{padding:14px 24px;justify-content:center}
   nav ul{gap:18px;flex-wrap:wrap;justify-content:center}
   nav ul a{font-size:13px}
+  .nav-logo-main{display:none}
 
   /* Banner */
   .banner-img{max-height:300px}
