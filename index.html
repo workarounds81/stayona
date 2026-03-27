@@ -43,27 +43,82 @@
 
 <!-- ═══ STRUCTURED DATA (Google Rich Results) ═══ -->
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "RealEstateAgent",
-  "name": "Stayona",
-  "description": "Monthly furnished room rentals in Bangkok, Thailand. Flexible leases for expats and digital nomads.",
-  "url": "https://www.stayona.com",
-  "logo": "https://www.stayona.com/logo.png",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Bangkok",
-    "addressCountry": "TH"
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Stayona",
+    "description": "Monthly furnished room rentals in Bangkok, Thailand. Flexible leases for expats, digital nomads and professionals.",
+    "url": "https://www.stayona.com",
+    "logo": "https://www.stayona.com/logo.png",
+    "image": "https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/og-imagefinal.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bangkok",
+      "addressCountry": "TH"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 13.7563,
+      "longitude": 100.5018
+    },
+    "areaServed": "Bangkok, Thailand",
+    "priceRange": "฿฿",
+    "currenciesAccepted": "THB",
+    "openingHours": "Mo-Su 09:00-21:00",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Thai"]
+    }
   },
-  "areaServed": "Bangkok, Thailand",
-  "priceRange": "฿฿",
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer service",
-    "availableLanguage": ["English", "Thai"]
-  },
-  "sameAs": ["https://www.stayona.com"]
-}
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the minimum rental period at Stayona?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Stayona offers flexible monthly rentals in Bangkok. There is no long-term commitment required — you can rent month-to-month."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are the rooms fully furnished?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. All Stayona rooms and studios are fully furnished and move-in ready. They include essentials like a bed, desk, air conditioning, and WiFi."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where are Stayona properties located?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Stayona properties are located across Bangkok's best neighbourhoods including Sukhumvit, On Nut, and other convenient areas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does it cost to rent a room at Stayona?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Monthly rooms at Stayona start from ฿12,000 per month. Prices vary depending on room size, location, and amenities."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can foreigners rent from Stayona?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Stayona is expat friendly and welcomes tenants of all nationalities. We are experienced in working with international renters in Bangkok."
+        }
+      }
+    ]
+  }
+]
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -292,6 +347,7 @@ section{padding:80px 52px}
 /* CONTACT — centred clean layout */
 .contact-section{background:var(--black);padding:80px 52px;display:flex;justify-content:center}
 .contact-center{width:100%;max-width:640px;display:flex;flex-direction:column;gap:32px}
+@media(min-width:769px){.contact-center{max-width:768px}}
 .contact-heading{text-align:center}
 .contact-heading h2{font-family:'Playfair Display',serif;font-size:clamp(26px,3.5vw,42px);color:#fff;line-height:1.1;letter-spacing:-0.02em;margin-bottom:12px}
 .contact-heading h2 em{color:var(--accent);font-style:italic}
@@ -382,8 +438,6 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 .footer-links a:hover{color:#fff}
 .footer-copy{font-size:12px;color:#444}
 /* FLOAT */
-.float-line{position:fixed;bottom:26px;right:26px;z-index:200;background:#06c755;color:#fff;padding:13px 18px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 6px 24px rgba(6,199,85,0.4);display:flex;align-items:center;gap:8px;transition:transform 0.2s}
-.float-line:hover{transform:translateY(-3px)}
 /* ── ADMIN ── */
 .admin-page{min-height:100vh;background:#f8fafc;font-family:'Figtree',sans-serif}
 .admin-nav{background:#0f172a;padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
@@ -726,7 +780,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <li><a href="#how">How It Works</a></li>
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#reviews">Reviews</a></li>
-    <li><a href="#partner" class="nav-partner" onclick="showPartner();return false">List Your Property</a></li>
+    <li><a href="/list-your-property" class="nav-partner">List Your Property</a></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
     <li class="currency-li">
       <div class="currency-btn" id="currencyBtn" onclick="toggleCurrencyDropdown(event)">
@@ -780,7 +834,7 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
       <p>Fully furnished, move-in ready rooms and studios in Bangkok's best neighbourhoods. Flexible monthly leases — no long-term commitment required. Perfect for expats, digital nomads, and professionals.</p>
       <div class="hero-actions">
         <a href="#rooms" class="btn-primary">Browse Rooms</a>
-        <a href="#partner" class="btn-primary" onclick="showPartner();return false" style="background:var(--accent);color:var(--black);box-shadow:0 4px 20px rgba(201,169,110,0.35)">List Your Property</a>
+        <a href="/list-your-property" class="btn-primary" style="background:var(--accent);color:var(--black);box-shadow:0 4px 20px rgba(201,169,110,0.35)">List Your Property</a>
         <a href="#how" class="btn-secondary">How it works</a>
       </div>
     </div>
@@ -1093,17 +1147,22 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
           <span id="bfSubmitText">Request Viewing →</span>
         </button>
 
-        <!-- LINE QR at bottom of form -->
+        <!-- Dual QR at bottom of form -->
         <div class="form-line-qr">
-          <div class="form-line-divider"><span>or reach us directly on LINE</span></div>
-          <div class="form-line-inner">
-            <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/line-qr.jpeg" alt="LINE QR" class="form-qr-img"/>
-            <div>
-              <div style="font-weight:700;font-size:14px;color:var(--black)">Scan to chat on LINE</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:3px">LineID: @stayona</div>
-              <div style="font-size:12px;color:#94a3b8">We will reply within 2 hours, 7 days a week</div>
+          <div class="form-line-divider"><span>Chat with Us on</span></div>
+          <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+              <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/line-qr.jpeg" alt="LINE QR Code" style="width:110px;height:110px;border-radius:10px;border:1.5px solid #e2e8f0"/>
+              <div style="font-weight:700;font-size:13px;color:var(--black)">LINE</div>
+              <div style="font-size:11px;color:#94a3b8">@stayona</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+              <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/ws.jpg" alt="WhatsApp QR Code" style="width:110px;height:110px;border-radius:10px;border:1.5px solid #e2e8f0"/>
+              <div style="font-weight:700;font-size:13px;color:var(--black)">WhatsApp</div>
+              <div style="font-size:11px;color:#94a3b8">Scan to chat</div>
             </div>
           </div>
+          <div style="text-align:center;font-size:12px;color:#94a3b8;margin-top:4px">We reply within 2 hours, 7 days a week</div>
         </div>
 
         <div class="bf-note">By submitting you agree to be contacted by Stayona regarding your enquiry.</div>
@@ -1117,17 +1176,13 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
     <a href="#rooms">Rooms</a>
     <a href="#how">How It Works</a>
     <a href="#gallery">Gallery</a>
-    <a href="#" onclick="showPartner();return false">List Property</a>
+    <a href="/list-your-property">List Property</a>
     <a href="#contact">Contact</a>
     <a href="#" onclick="showLogin();window.scrollTo(0,0);return false">Admin</a>
   </div>
   <div class="footer-copy">© 2026 Stayona. Bangkok, Thailand.</div>
 </footer>
 
-<a class="float-line" href="#contact">
-  <svg width="16" height="16" viewBox="0 0 40 40" fill="none"><path d="M33 18.6c0-6.1-6.1-11-13.5-11S6 12.5 6 18.6c0 5.4 4.8 10 11.4 10.8.4.1 1 .3 1.2.7.2.4.1.9.1 1.3l-.2 1.1c0 .4-.3 1.4 1.2.8 1.5-.6 8.3-4.9 11.3-8.3 2-2.3 3-4.6 3-7.4z" fill="white"/></svg>
-  Chat on LINE
-</a>
 </div><!-- END publicSite -->
 
 <!-- ═══ PARTNER PAGE (separate page) ═══ -->
@@ -1266,6 +1321,24 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
             <div id="pfError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;font-weight:600"></div>
             <button class="pf-submit" onclick="submitPartnerForm()">Send Enquiry →</button>
             <div class="pf-note">We respect your privacy. Your details are only used to respond to your enquiry.</div>
+
+            <!-- Dual QR for partner form -->
+            <div class="form-line-qr" style="margin-top:24px">
+              <div class="form-line-divider"><span>Chat with Us on</span></div>
+              <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/line-qr.jpeg" alt="LINE QR Code" style="width:100px;height:100px;border-radius:10px;border:1.5px solid #e2e8f0"/>
+                  <div style="font-weight:700;font-size:13px;color:var(--black)">LINE</div>
+                  <div style="font-size:11px;color:#94a3b8">@stayona</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/ws.jpg" alt="WhatsApp QR Code" style="width:100px;height:100px;border-radius:10px;border:1.5px solid #e2e8f0"/>
+                  <div style="font-weight:700;font-size:13px;color:var(--black)">WhatsApp</div>
+                  <div style="font-size:11px;color:#94a3b8">Scan to chat</div>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:12px;color:#94a3b8;margin-top:4px">We reply within 2 hours, 7 days a week</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1593,10 +1666,10 @@ footer{background:#0a0a09;padding:44px 52px;display:flex;justify-content:space-b
 <!-- SHARE POPUP -->
 <div id="sharePopup" class="share-popup">
   <a id="spWhatsApp" class="share-popup-item" href="#" target="_blank" rel="noopener">
-    <span style="font-size:16px">💬</span><span style="color:#25D366">WhatsApp</span>
+    <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/whatsapp.png" alt="WhatsApp" style="width:20px;height:20px;border-radius:4px"/><span style="color:#25D366">WhatsApp</span>
   </a>
   <a id="spLine" class="share-popup-item" href="#" target="_blank" rel="noopener">
-    <span style="font-size:16px">💚</span><span style="color:#06C755">LINE</span>
+    <img src="https://qubwootdatrbpyipkrvw.supabase.co/storage/v1/object/public/images/line.png" alt="LINE" style="width:20px;height:20px;border-radius:4px"/><span style="color:#06C755">LINE</span>
   </a>
   <button class="share-popup-item" onclick="copyShareLink()">
     <span style="font-size:14px">🔗</span> Copy Link

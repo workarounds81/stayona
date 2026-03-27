@@ -38,4 +38,17 @@ with open(os.path.join(script_dir, 'stayona-final.html'), 'w') as f:
 with open(os.path.join(script_dir, 'index.html'), 'w') as f:
     f.write(html)
 
+# Build list-your-property page
+lyp = open(os.path.join(script_dir, 'list-your-property-template.html')).read()
+lyp = lyp.replace('%%PARTNER_BANNER%%', imgs['partner_banner'])
+lyp = lyp.replace('%%LOGO%%', imgs['logo'])
+lyp = lyp.replace('%%FAV32%%', imgs['fav32'])
+lyp = lyp.replace('%%FAV180%%', imgs['fav180'])
+lyp = lyp.replace('%%FAV192%%', imgs['fav192'])
+lyp = lyp.replace('%%SUPABASE_URL%%', SUPABASE_URL)
+lyp = lyp.replace('%%SUPABASE_KEY%%', SUPABASE_KEY)
+
+with open(os.path.join(script_dir, 'list-your-property.html'), 'w') as f:
+    f.write(lyp)
+
 print('Done! Size:', len(html), 'bytes')
