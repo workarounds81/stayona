@@ -10,7 +10,7 @@ with open(os.path.join(script_dir, 'imgs.json')) as f:
 SUPABASE_URL = 'https://qubwootdatrbpyipkrvw.supabase.co'
 SUPABASE_KEY = 'sb_publishable_soPXNzg_s8aLgyi6bsQEXw_sRpOEzZU'
 ADMIN_PASSWORD = 'stayona2025'
-WA_NUMBER = '66XXXXXXXXXX'  # TODO: replace with real WhatsApp number e.g. 66812345678
+WA_NUMBER = '66942280088'
 
 html = open(os.path.join(script_dir, 'template.html')).read()
 
