@@ -139,7 +139,7 @@ html{scroll-behavior:smooth;overflow-x:hidden;width:100%;touch-action:pan-x pan-
 body{font-family:'Figtree',sans-serif;background:var(--warm-white);color:var(--black);overflow-x:hidden;width:100%;max-width:1700px;margin:0 auto;position:relative;touch-action:pan-x pan-y}
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px 52px;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);transition:background 0.3s,backdrop-filter 0.3s;border-bottom:1px solid transparent}
-.nav-logo-main{position:absolute;left:52px;top:50%;transform:translateY(-50%)}
+.nav-logo-main{position:absolute;left:max(52px,calc((100vw - 1700px)/2 + 52px));top:50%;transform:translateY(-50%)}
 .nav-logo-main img{height:28px;display:block}
 nav.scrolled{background:rgba(247,246,243,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
 nav ul{display:flex;gap:32px;list-style:none;align-items:center}
